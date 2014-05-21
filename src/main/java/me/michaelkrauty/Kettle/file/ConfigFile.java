@@ -16,6 +16,8 @@ import java.util.List;
  */
 public class ConfigFile {
 
+	File configFile = new File("plugins/Kettle/config.yml");
+
 	YamlConfiguration config = new YamlConfiguration();
 
 	private final Kettle kettle;
@@ -29,7 +31,6 @@ public class ConfigFile {
 
 	public ConfigFile(Kettle instance) {
 		kettle = instance;
-		File configFile = new File("plugins/Kettle/config.yml");
 		if (!configFile.exists()) {
 			try {
 				File kettleDir = new File("plugins/Kettle");
@@ -77,11 +78,25 @@ public class ConfigFile {
 
 	public void set(String key, String value) {
 		config.set(key, value);
+		save();
+	}
+
+	public void set(String key, List<String> value) {
+		config.set(key, value);
+		save();
 	}
 
 	public ArrayList<String> getEnabledPlugins() {
 		ArrayList<String> plugins = new ArrayList<String>();
 		plugins.addAll(getList("enabled_plugins"));
 		return plugins;
+	}
+
+	public void save() {
+		try {
+			config.save(configFile);
+		} catch (Exception e) {
+			kettle.error.printError("Couldn't save config.yml", e.getMessage());
+		}
 	}
 }

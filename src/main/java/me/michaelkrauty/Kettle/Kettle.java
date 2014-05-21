@@ -6,6 +6,7 @@ import me.michaelkrauty.Kettle.command.essential.TeleportHereCommand;
 import me.michaelkrauty.Kettle.command.factions.FactionsCommand;
 import me.michaelkrauty.Kettle.command.kettle.HelpCommand;
 import me.michaelkrauty.Kettle.command.kettle.KettleCommand;
+import me.michaelkrauty.Kettle.command.kettle.PluginCommand;
 import me.michaelkrauty.Kettle.command.kettle.TestCommand;
 import me.michaelkrauty.Kettle.file.ConfigFile;
 import me.michaelkrauty.Kettle.file.MotdFile;
@@ -38,6 +39,11 @@ public class Kettle extends JavaPlugin {
 
 	private final PlayerListener playerListener = new PlayerListener(this);
 	private final BlockListener blockListener = new BlockListener(this);
+
+	public static final String[] validPlugins = new String[] {
+			"essential",
+			"factions"
+	};
 
 	public void onEnable() {
 
@@ -77,6 +83,7 @@ public class Kettle extends JavaPlugin {
 		new KettleCommand("kettle", "/<command> [args]", "The Kettle Command", this).register();
 		new HelpCommand("help", "/<command> [args]", "Help Command", this).register();
 		new TestCommand("test", "/<command> [args]", "Test Command", this).register();
+		new PluginCommand("plugin", "/<command> [args]", "Plugin Command", this).register();
 
 		/** Essential commands */
 		if (enabledPlugins.contains("essential")) {
@@ -89,5 +96,14 @@ public class Kettle extends JavaPlugin {
 		if (enabledPlugins.contains("factions")) {
 			new FactionsCommand("factions", "/<command> [args]", "The factions command", Arrays.asList("f", "faction"), this).register();
 		}
+	}
+
+	public static boolean isValidPlugin(String plugin) {
+		for (String plu : validPlugins) {
+			if (plugin.equalsIgnoreCase(plu)) {
+				return true;
+			}
+		}
+		return false;
 	}
 }
