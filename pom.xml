@@ -20,7 +20,6 @@
             <groupId>org.bukkit</groupId>
             <artifactId>bukkit</artifactId>
             <version>1.7.9-R0.2-SNAPSHOT</version>
-            <scope>build</scope>
         </dependency>
     </dependencies>
 
