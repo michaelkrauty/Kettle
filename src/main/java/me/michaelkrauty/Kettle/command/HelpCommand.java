@@ -10,11 +10,11 @@ import org.bukkit.command.CommandSender;
  *
  * @author michaelkrauty
  */
-public class Help implements CommandExecutor {
+public class HelpCommand implements CommandExecutor {
 
 	private final Kettle kettle;
 
-	public Help(Kettle instance) {
+	public HelpCommand(Kettle instance) {
 		kettle = instance;
 	}
 

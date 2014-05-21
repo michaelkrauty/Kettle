@@ -1,0 +1,9 @@
+name: Kettle
+version: 1.0
+author: michaelkrauty
+main: me.michaelkrauty.Kettle.Kettle
+commands:
+  kettle:
+    usage: /<command>
+  help:
+    usage: /<command>

@@ -33,7 +33,7 @@ public class Player {
 
 	public ArrayList<String> getPlayer(String uuid) {
 		File playerFile = new File("players/" + uuid + ".yml");
-		if(playerFile.exists()) {
+		if (playerFile.exists()) {
 			ArrayList<String> playerInfo = new ArrayList<String>();
 			// TODO: get player info
 			return playerInfo;
