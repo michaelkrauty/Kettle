@@ -1,4 +1,4 @@
-package me.michaelkrauty.Kettle.yml;
+package me.michaelkrauty.Kettle.file;
 
 import me.michaelkrauty.Kettle.Kettle;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -12,22 +12,22 @@ import java.util.logging.Level;
  *
  * @author michaelkrauty
  */
-public class Player {
+public class PlayerFile {
 
 	private final Kettle kettle;
 
-	public Player(Kettle instance) {
+	public PlayerFile(Kettle instance) {
 		kettle = instance;
 	}
 
-	public void newPlayer(String uuid) {
-		YamlConfiguration player = new YamlConfiguration();
+	public void newPlayer(String uuid, String name) {
 		File playerFile = new File("players/" + uuid + ".yml");
 		try {
-			player.load(playerFile);
+			playerFile.createNewFile();
+			setPlayerData(uuid, "uuid", uuid);
+			setPlayerData(uuid, "username", name);
 		} catch (Exception e) {
-			kettle.log.log(Level.WARNING, "Error loading players/" + uuid + ".yml!");
-			kettle.log.log(Level.WARNING, e.getMessage());
+			kettle.error.printError("Error creating players/" + uuid + ".yml", e.getMessage());
 		}
 	}
 
@@ -35,7 +35,12 @@ public class Player {
 		File playerFile = new File("players/" + uuid + ".yml");
 		if (playerFile.exists()) {
 			ArrayList<String> playerInfo = new ArrayList<String>();
-			// TODO: get player info
+			YamlConfiguration player = new YamlConfiguration();
+			try {
+				player.load(playerFile);
+			} catch (Exception e) {
+				kettle.error.printError("Error loading players/" + uuid + ".yml", e.getMessage());
+			}
 			return playerInfo;
 		} else {
 			return null;
@@ -45,7 +50,7 @@ public class Player {
 	public void setPlayerData(String uuid, String key, String value) {
 		File playerFile = new File("players/" + uuid + ".yml");
 		if (playerFile.exists()) {
-			// TODO: set value under key in players/uuid.yml
+			// TODO: set value under key in players/uuid.file
 		}
 	}
 }

@@ -1,4 +1,4 @@
-package me.michaelkrauty.Kettle.yml;
+package me.michaelkrauty.Kettle.file;
 
 import me.michaelkrauty.Kettle.Kettle;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -15,7 +15,7 @@ import java.util.logging.Level;
  *
  * @author michaelkrauty
  */
-public class Config {
+public class ConfigFile {
 
 	YamlConfiguration config = new YamlConfiguration();
 
@@ -24,10 +24,11 @@ public class Config {
 	private final String[] defaultConfig = new String[]{
 			"config_version: 1.0",
 			"enabled_plugins:",
+			"  - essential",
 			"  - factions"
 	};
 
-	public Config(Kettle instance) {
+	public ConfigFile(Kettle instance) {
 		kettle = instance;
 		File configFile = new File("plugins/Kettle/config.yml");
 		if (!configFile.exists()) {
@@ -42,15 +43,13 @@ public class Config {
 				}
 				out.close();
 			} catch (Exception e) {
-				kettle.log.log(Level.WARNING, "Failed to copy default config.yml");
-				e.printStackTrace();
+				kettle.error.printError("Failed to copy default config.yml", e.getMessage());
 			}
 		}
 		try {
 			config.load(configFile);
 		} catch (Exception e) {
-			kettle.log.log(Level.WARNING, "Error loading config.yml");
-			e.printStackTrace();
+			kettle.error.printError("Error loading config.yml", e.getMessage());
 		}
 	}
 

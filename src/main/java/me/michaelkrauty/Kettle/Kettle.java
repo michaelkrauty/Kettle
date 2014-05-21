@@ -3,10 +3,14 @@ package me.michaelkrauty.Kettle;
 import me.michaelkrauty.Kettle.command.factions.FactionsCommand;
 import me.michaelkrauty.Kettle.command.kettle.HelpCommand;
 import me.michaelkrauty.Kettle.command.kettle.KettleCommand;
+import me.michaelkrauty.Kettle.command.essential.MotdCommand;
 import me.michaelkrauty.Kettle.command.kettle.TestCommand;
 import me.michaelkrauty.Kettle.listener.BlockListener;
 import me.michaelkrauty.Kettle.listener.PlayerListener;
-import me.michaelkrauty.Kettle.yml.Config;
+import me.michaelkrauty.Kettle.file.ConfigFile;
+import me.michaelkrauty.Kettle.file.MotdFile;
+import me.michaelkrauty.Kettle.file.PlayerFile;
+import me.michaelkrauty.Kettle.util.Error;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -22,8 +26,12 @@ import java.util.logging.Logger;
 public class Kettle extends JavaPlugin {
 
 	public static final Logger log = Logger.getLogger("Minecraft");
-	public final Config config = new Config(this);
+	public final ConfigFile configFile = new ConfigFile(this);
+	public final PlayerFile playerFile = new PlayerFile(this);
+	public final MotdFile motdFile = new MotdFile(this);
 	public static ArrayList<String> enabledPlugins;
+
+	public final me.michaelkrauty.Kettle.util.Error error = new Error(this);
 
 	private final PlayerListener playerListener = new PlayerListener(this);
 	private final BlockListener blockListener = new BlockListener(this);
@@ -45,7 +53,7 @@ public class Kettle extends JavaPlugin {
 
 	private void getEnabledPlugins() {
 		try {
-			enabledPlugins = config.getEnabledPlugins();
+			enabledPlugins = configFile.getEnabledPlugins();
 			for (String name : enabledPlugins) {
 				log.info("[Kettle] Enabled Plugin: " + name);
 			}
@@ -63,9 +71,14 @@ public class Kettle extends JavaPlugin {
 	private void registerCommands() {
 
 		/** Default kettle commands */
-		new KettleCommand("kettle", "/<command> [args]", "The kettle command", this).register();
-		new HelpCommand("help", "/<command> [args]", "Help command", this).register();
-		new TestCommand("test", "/<command> [args]", "Test command", this).register();
+		new KettleCommand("kettle", "/<command> [args]", "The Kettle Command", this).register();
+		new HelpCommand("help", "/<command> [args]", "Help Command", this).register();
+		new TestCommand("test", "/<command> [args]", "Test Command", this).register();
+
+		/** Essential commands */
+		if (enabledPlugins.contains("essential")) {
+			new MotdCommand("motd", "/<command> [args]", "MOTD Command", this).register();
+		}
 
 		/** Factions commands */
 		if (enabledPlugins.contains("factions")) {

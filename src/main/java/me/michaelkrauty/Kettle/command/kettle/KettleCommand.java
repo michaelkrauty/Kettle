@@ -28,7 +28,7 @@ public class KettleCommand extends AbstractCommand {
 			plugins = "none";
 		}
 		sender.sendMessage("Enabled Plugins: " + plugins);
-		sender.sendMessage("Config Version: " + kettle.config.getString("config_version"));
+		sender.sendMessage("Config Version: " + kettle.configFile.getString("config_version"));
 		return true;
 	}
 }
