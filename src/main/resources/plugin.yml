@@ -4,6 +4,6 @@ author: michaelkrauty
 main: me.michaelkrauty.Kettle.Kettle
 commands:
   kettle:
-    usage: /<command>
+    description: the kettle command
   help:
-    usage: /<command>
+    description: kettle help
