@@ -2,8 +2,3 @@ name: Kettle
 version: 1.0
 author: michaelkrauty
 main: me.michaelkrauty.Kettle.Kettle
-commands:
-  kettle:
-    description: the kettle command
-  help:
-    description: kettle help

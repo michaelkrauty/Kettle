@@ -1,7 +1,8 @@
 package me.michaelkrauty.Kettle;
 
-import me.michaelkrauty.Kettle.command.HelpCommand;
-import me.michaelkrauty.Kettle.command.KettleCommand;
+import me.michaelkrauty.Kettle.command.factions.FactionsCommand;
+import me.michaelkrauty.Kettle.command.kettle.HelpCommand;
+import me.michaelkrauty.Kettle.command.kettle.KettleCommand;
 import me.michaelkrauty.Kettle.yml.Config;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
@@ -25,17 +26,19 @@ public class Kettle extends JavaPlugin {
 
 	public void onEnable() {
 
-		enabledPlugins = config.getEnabledModules();
-
-		for(String name : enabledPlugins) {
-			log.info("[Kettle] Enabled Plugin: " + name);
+		try {
+			enabledPlugins = config.getEnabledModules();
+			for (String name : enabledPlugins) {
+				log.info("[Kettle] Enabled Plugin: " + name);
+			}
+		} catch (Exception e) {
+			log.info("[Kettle] No plugins enabled!");
 		}
 
 		PluginManager pm = getServer().getPluginManager();
 		// TODO: register events
 
-		getCommand("kettle").setExecutor(new KettleCommand(this));
-		getCommand("help").setExecutor(new HelpCommand(this));
+		registerCommands();
 
 		PluginDescriptionFile pdfFile = this.getDescription();
 		log.info("Kettle version " + pdfFile.getVersion() + " enabled!");
@@ -46,5 +49,18 @@ public class Kettle extends JavaPlugin {
 	public void onDisable() {
 		PluginDescriptionFile pdfFile = this.getDescription();
 		log.info(pdfFile.getName() + " version " + pdfFile.getVersion() + " disabled!");
+	}
+
+	private void registerCommands() {
+
+		/** Default kettle commands */
+		new KettleCommand("kettle", "/<command> [args]", "The kettle command", this).register();
+		new HelpCommand("help", "/<command> [args]", "Help command", this).register();
+
+
+		/** Factions commands */
+		if (enabledPlugins.contains("factions")) {
+			new FactionsCommand("factions", "/<command> [args]", "The factions command", this).register();
+		}
 	}
 }

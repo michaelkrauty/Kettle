@@ -1,7 +1,8 @@
-package me.michaelkrauty.Kettle.command;
+package me.michaelkrauty.Kettle.command.kettle;
 
+import me.michaelkrauty.Kettle.Kettle;
+import me.michaelkrauty.Kettle.util.AbstractCommand;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
 /**
@@ -9,17 +10,24 @@ import org.bukkit.command.CommandSender;
  *
  * @author michaelkrauty
  */
-public class KettleCommand implements CommandExecutor {
+public class KettleCommand extends AbstractCommand {
 
 	private final me.michaelkrauty.Kettle.Kettle kettle;
 
-	public KettleCommand(me.michaelkrauty.Kettle.Kettle instance) {
+	public KettleCommand(String command, String usage, String description, Kettle instance) {
+		super(command, usage, description);
 		kettle = instance;
 	}
 
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
 		sender.sendMessage("Kettle version " + kettle.getDescription().getVersion());
-		sender.sendMessage("Enabled Plugins: " + kettle.enabledPlugins.toString());
+		String plugins;
+		try {
+			plugins = kettle.enabledPlugins.toString();
+		} catch (Exception e) {
+			plugins = "none";
+		}
+		sender.sendMessage("Enabled Plugins: " + plugins);
 		sender.sendMessage("Config Version: " + kettle.config.getString("config_version"));
 		return true;
 	}
