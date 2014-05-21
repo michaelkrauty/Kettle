@@ -5,11 +5,9 @@ import me.michaelkrauty.Kettle.util.AbstractCommand;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.help.HelpMap;
 import org.bukkit.help.HelpTopic;
 
 import java.util.ArrayList;
-import java.util.Collection;
 
 /**
  * Created on 5/20/2014.

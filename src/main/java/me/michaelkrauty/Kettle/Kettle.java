@@ -4,6 +4,8 @@ import me.michaelkrauty.Kettle.command.factions.FactionsCommand;
 import me.michaelkrauty.Kettle.command.kettle.HelpCommand;
 import me.michaelkrauty.Kettle.command.kettle.KettleCommand;
 import me.michaelkrauty.Kettle.command.kettle.TestCommand;
+import me.michaelkrauty.Kettle.listener.BlockListener;
+import me.michaelkrauty.Kettle.listener.PlayerListener;
 import me.michaelkrauty.Kettle.yml.Config;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
@@ -22,6 +24,9 @@ public class Kettle extends JavaPlugin {
 	public static final Logger log = Logger.getLogger("Minecraft");
 	public final Config config = new Config(this);
 	public static ArrayList<String> enabledPlugins;
+
+	private final PlayerListener playerListener = new PlayerListener(this);
+	private final BlockListener blockListener = new BlockListener(this);
 
 	public void onEnable() {
 
@@ -51,7 +56,8 @@ public class Kettle extends JavaPlugin {
 
 	private void registerEvents() {
 		PluginManager pm = getServer().getPluginManager();
-		// TODO: register events
+		pm.registerEvents(playerListener, this);
+		pm.registerEvents(blockListener, this);
 	}
 
 	private void registerCommands() {
