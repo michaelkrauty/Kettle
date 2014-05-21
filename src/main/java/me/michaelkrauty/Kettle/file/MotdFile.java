@@ -5,7 +5,6 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.logging.Level;
 
 /**
  * Created on 5/21/2014.
@@ -58,7 +57,7 @@ public class MotdFile {
 			e.printStackTrace();
 		} finally {
 			try {
-				if(br != null) br.close();
+				if (br != null) br.close();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

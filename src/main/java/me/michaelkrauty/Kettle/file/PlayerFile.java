@@ -5,7 +5,6 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.logging.Level;
 
 /**
  * Created on 5/20/2014.
