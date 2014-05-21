@@ -81,7 +81,7 @@ public class Config {
 		config.set(key, value);
 	}
 
-	public ArrayList<String> getEnabledModules() {
+	public ArrayList<String> getEnabledPlugins() {
 		ArrayList<String> plugins = new ArrayList<String>();
 		plugins.addAll(getList("enabled_plugins"));
 		return plugins;
