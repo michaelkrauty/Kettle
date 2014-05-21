@@ -51,6 +51,3 @@ public class HelpCommand extends AbstractCommand {
 		return true;
 	}
 }
-//			for (HelpTopic cmdLabel : kettle.getServer().getHelpMap().getHelpTopics()) {
-//				sender.sendMessage(ChatColor.RED + cmdLabel.getName() + ": " + ChatColor.GRAY + cmdLabel.getShortText());
-//			}
