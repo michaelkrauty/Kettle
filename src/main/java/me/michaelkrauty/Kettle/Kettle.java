@@ -1,5 +1,6 @@
 package me.michaelkrauty.Kettle;
 
+import me.michaelkrauty.Kettle.command.essential.GamemodeCommand;
 import me.michaelkrauty.Kettle.command.essential.MotdCommand;
 import me.michaelkrauty.Kettle.command.essential.TeleportCommand;
 import me.michaelkrauty.Kettle.command.essential.TeleportHereCommand;
@@ -9,6 +10,7 @@ import me.michaelkrauty.Kettle.command.kettle.KettleCommand;
 import me.michaelkrauty.Kettle.command.kettle.PluginCommand;
 import me.michaelkrauty.Kettle.command.kettle.TestCommand;
 import me.michaelkrauty.Kettle.file.ConfigFile;
+import me.michaelkrauty.Kettle.file.LangFile;
 import me.michaelkrauty.Kettle.file.MotdFile;
 import me.michaelkrauty.Kettle.file.PlayerFile;
 import me.michaelkrauty.Kettle.listener.BlockListener;
@@ -18,8 +20,10 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.logging.Logger;
 
 /**
@@ -33,6 +37,7 @@ public class Kettle extends JavaPlugin {
 	public final ConfigFile configFile = new ConfigFile(this);
 	public final PlayerFile playerFile = new PlayerFile(this);
 	public final MotdFile motdFile = new MotdFile(this);
+	public final LangFile langFile = new LangFile(this);
 	public static ArrayList<String> enabledPlugins;
 
 	public final me.michaelkrauty.Kettle.util.Error error = new Error(this);
@@ -40,13 +45,16 @@ public class Kettle extends JavaPlugin {
 	private final PlayerListener playerListener = new PlayerListener(this);
 	private final BlockListener blockListener = new BlockListener(this);
 
-	public static final String[] validPlugins = new String[] {
+	public static final String[] validPlugins = new String[]{
 			"essential",
 			"factions"
 	};
 
+	public static final HashMap<String, String[]> commandInfo = getCommandInfo();
+
 	public void onEnable() {
 
+		checkDirectories();
 		getEnabledPlugins();
 		registerEvents();
 		registerCommands();
@@ -90,6 +98,7 @@ public class Kettle extends JavaPlugin {
 			new MotdCommand("motd", "/<command> [args]", "MOTD Command", this).register();
 			new TeleportCommand("teleport", "/<command> [args]", "Teleport Command", Arrays.asList("tp", "tele"), this).register();
 			new TeleportHereCommand("teleporthere", "/<command> [args]", "Teleport Here Command", Arrays.asList("tph", "tphere"), this);
+			new GamemodeCommand("gamemode", "/<command> [args]", "Gamemode Command", Arrays.asList("gm"), this);
 		}
 
 		/** Factions commands */
@@ -105,5 +114,26 @@ public class Kettle extends JavaPlugin {
 			}
 		}
 		return false;
+	}
+
+	private static final HashMap<String, String[]> getCommandInfo() {
+		HashMap<String, String[]> cmds = new HashMap<String, String[]>();
+		cmds.put("kettle", new String[] {"/kettle"});
+		cmds.put("help", new String[] {"/help", "/help <command>"});
+		cmds.put("test", new String[] {"/test"});
+		cmds.put("plugin", new String[] {"/plugin <enable|disable> <plugin>"});
+		cmds.put("motd", new String[] {"/motd"});
+		cmds.put("teleport", new String[] {"/tp <player>", "/tp <player> <player>"});
+		cmds.put("teleporthere", new String[] {"/tphere <player>"});
+		cmds.put("gamemode", new String[] {"/gm <creative|survival|adventure>", "/gm <creative|survival|adventure> <player>"});
+
+		return cmds;
+	}
+
+	private void checkDirectories() {
+		File playerDir = new File("plugins/Kettle/players");
+		if(!playerDir.exists()) {
+			playerDir.mkdir();
+		}
 	}
 }

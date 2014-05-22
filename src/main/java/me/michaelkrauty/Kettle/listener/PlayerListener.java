@@ -22,11 +22,10 @@ public class PlayerListener implements Listener {
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		Player player = event.getPlayer();
-		String playerName = player.getName();
-		String playerUUID = player.getUniqueId().toString();
-		if (kettle.playerFile.getPlayer(playerUUID) == null) {
-			kettle.playerFile.newPlayer(playerUUID, playerName);
+		if (kettle.playerFile.getPlayer(player) == null) {
+			kettle.playerFile.newPlayer(player);
 		}
+		kettle.playerFile.setPlayerData(player.getUniqueId().toString(), "lastUsername", player.getName());
 		for (String line : kettle.motdFile.getMOTD()) {
 			player.sendMessage(line);
 		}

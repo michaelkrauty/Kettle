@@ -25,11 +25,10 @@ public class HelpCommand extends AbstractCommand {
 
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
 		ArrayList<String> commands = new ArrayList<String>();
+		ArrayList<String> descriptions = new ArrayList<String>();
+		ArrayList<String> fulltexts = new ArrayList<String>();
 		for (HelpTopic helpTopic : kettle.getServer().getHelpMap().getHelpTopics()) {
 			commands.add(helpTopic.getName());
-		}
-		ArrayList<String> descriptions = new ArrayList<String>();
-		for (HelpTopic helpTopic : kettle.getServer().getHelpMap().getHelpTopics()) {
 			descriptions.add(helpTopic.getShortText());
 		}
 		int pages = 8;
@@ -40,9 +39,15 @@ public class HelpCommand extends AbstractCommand {
 				}
 			}
 		} else {
-			for (int i = 0; i < commands.size(); i++) {
-				if ((i < (Integer.parseInt(args[0]) * pages)) && (i >= (Integer.parseInt(args[0]) * pages) - pages)) {
-					sender.sendMessage(ChatColor.RED + commands.get(i) + ": " + ChatColor.GRAY + descriptions.get(i));
+			try {
+				for (int i = 0; i < commands.size(); i++) {
+					if ((i < (Integer.parseInt(args[0]) * pages)) && (i >= (Integer.parseInt(args[0]) * pages) - pages)) {
+						sender.sendMessage(ChatColor.RED + commands.get(i) + ": " + ChatColor.GRAY + descriptions.get(i));
+					}
+				}
+			} catch (Exception e) {
+				if (commands.contains(args[0])) {
+
 				}
 			}
 		}

@@ -2,9 +2,11 @@
   <dictionary name="Michael">
     <words>
       <w>bukkit</w>
+      <w>gamemode</w>
       <w>hotspot</w>
       <w>motd</w>
       <w>noninfringement</w>
+      <w>teleport</w>
     </words>
   </dictionary>
 </component>

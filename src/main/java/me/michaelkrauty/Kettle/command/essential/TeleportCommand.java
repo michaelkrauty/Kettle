@@ -24,7 +24,7 @@ public class TeleportCommand extends AbstractCommand {
 
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
 		if (args.length == 0) {
-			sender.sendMessage("Unknown usage! Use \"/help tp\" for help.");
+			sender.sendMessage(kettle.langFile.getString("teleport", "incorrectusage"));
 			return true;
 		}
 		if (args.length == 1) {
@@ -37,15 +37,15 @@ public class TeleportCommand extends AbstractCommand {
 						sender.sendMessage("Teleported to " + target.getName());
 						return true;
 					} else {
-						sender.sendMessage("You don't have permission to do that!");
+						sender.sendMessage(kettle.langFile.getString("teleport" ,"nopermission"));
 						return true;
 					}
 				} else {
-					sender.sendMessage("Couldn't find the player " + args[0]);
+					sender.sendMessage(kettle.langFile.getString("teleport", "playernotfound", args[0]));
 					return true;
 				}
 			} else {
-				sender.sendMessage("Silly console, you can't teleport!");
+				sender.sendMessage(kettle.langFile.getString("teleport", "console"));
 				return true;
 			}
 		}
@@ -56,22 +56,22 @@ public class TeleportCommand extends AbstractCommand {
 					Player player2 = kettle.getServer().getPlayer(args[1]);
 					if (sender.hasPermission("kettle.teleport.others")) {
 						player1.teleport(player2);
-						sender.sendMessage("Teleported " + player1.getName() + " to " + player2.getName() + ".");
+						sender.sendMessage(kettle.langFile.getString("teleport", "teleportplayertoplayersuccess", player1.getName(), player2.getName()));
 						return true;
 					} else {
-						sender.sendMessage("You don't have permission to do that!");
+						sender.sendMessage(kettle.langFile.getString("teleport", "nopermission"));
 						return true;
 					}
 				} else {
-					sender.sendMessage("Couldn't find the player " + args[1]);
+					sender.sendMessage(kettle.langFile.getString("teleport", "playernotfound", args[1]));
 					return true;
 				}
 			} else {
-				sender.sendMessage("Couldn't find the player " + args[0]);
+				sender.sendMessage(kettle.langFile.getString("teleport", "playernotfound", args[0]));
 				return true;
 			}
 		}
-		sender.sendMessage("Unknown usage! Use \"/help tp\" for help.");
+		sender.sendMessage(kettle.langFile.getString("teleport", "incorrectusage"));
 		return true;
 	}
 }
