@@ -25,7 +25,7 @@ public class PlayerListener implements Listener {
 		if (kettle.playerFile.getPlayer(player) == null) {
 			kettle.playerFile.newPlayer(player);
 		}
-		kettle.playerFile.setPlayerData(player.getUniqueId().toString(), "lastUsername", player.getName());
+		kettle.playerFile.setPlayerData(player.getUniqueId().toString(), "username", player.getName());
 		for (String line : kettle.motdFile.getMOTD()) {
 			player.sendMessage(line);
 		}

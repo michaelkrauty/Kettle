@@ -22,9 +22,8 @@ public class PlayerFile {
 
 	public void newPlayer(Player player) {
 		String uuid = player.getUniqueId().toString();
-		String name = player.getName();
 		setPlayerData(uuid, "uuid", uuid);
-		setPlayerData(uuid, "username", name);
+		setPlayerData(uuid, "username", player.getName());
 	}
 
 	public HashMap<String, String> getPlayer(Player player) {
@@ -37,7 +36,7 @@ public class PlayerFile {
 			try {
 				playerYaml.load(playerFile);
 				playerData.put("uuid", playerUUID);
-				playerData.put("lastUsername", playerYaml.getString("lastUsername"));
+				playerData.put("username", playerYaml.getString("username"));
 			} catch (Exception e) {
 				kettle.error.printError("Error loading plugins/Kettle/players/" + playerUUID + ".yml", e.getMessage());
 			}

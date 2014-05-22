@@ -23,7 +23,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.logging.Logger;
 
 /**
@@ -49,8 +48,6 @@ public class Kettle extends JavaPlugin {
 			"essential",
 			"factions"
 	};
-
-	public static final HashMap<String, String[]> commandInfo = getCommandInfo();
 
 	public void onEnable() {
 
@@ -116,24 +113,36 @@ public class Kettle extends JavaPlugin {
 		return false;
 	}
 
-	private static final HashMap<String, String[]> getCommandInfo() {
-		HashMap<String, String[]> cmds = new HashMap<String, String[]>();
-		cmds.put("kettle", new String[] {"/kettle"});
-		cmds.put("help", new String[] {"/help", "/help <command>"});
-		cmds.put("test", new String[] {"/test"});
-		cmds.put("plugin", new String[] {"/plugin <enable|disable> <plugin>"});
-		cmds.put("motd", new String[] {"/motd"});
-		cmds.put("teleport", new String[] {"/tp <player>", "/tp <player> <player>"});
-		cmds.put("teleporthere", new String[] {"/tphere <player>"});
-		cmds.put("gamemode", new String[] {"/gm <creative|survival|adventure>", "/gm <creative|survival|adventure> <player>"});
-
-		return cmds;
-	}
-
 	private void checkDirectories() {
 		File playerDir = new File("plugins/Kettle/players");
-		if(!playerDir.exists()) {
+		if (!playerDir.exists()) {
 			playerDir.mkdir();
 		}
+	}
+
+	public static final String format(String str) {
+		return str
+				.replace("&0", "§0")
+				.replace("&1", "§1")
+				.replace("&2", "§2")
+				.replace("&3", "§3")
+				.replace("&4", "§4")
+				.replace("&5", "§5")
+				.replace("&6", "§6")
+				.replace("&7", "§7")
+				.replace("&8", "§8")
+				.replace("&9", "§9")
+				.replace("&a", "§a")
+				.replace("&b", "§b")
+				.replace("&c", "§c")
+				.replace("&d", "§d")
+				.replace("&e", "§e")
+				.replace("&f", "§f")
+				.replace("&k", "§k")
+				.replace("&l", "§l")
+				.replace("&m", "§m")
+				.replace("&n", "§n")
+				.replace("&o", "§o")
+				.replace("&r", "§r");
 	}
 }

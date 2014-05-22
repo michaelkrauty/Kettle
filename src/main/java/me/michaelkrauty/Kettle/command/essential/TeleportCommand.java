@@ -37,7 +37,7 @@ public class TeleportCommand extends AbstractCommand {
 						sender.sendMessage("Teleported to " + target.getName());
 						return true;
 					} else {
-						sender.sendMessage(kettle.langFile.getString("teleport" ,"nopermission"));
+						sender.sendMessage(kettle.langFile.getString("teleport", "nopermission"));
 						return true;
 					}
 				} else {
