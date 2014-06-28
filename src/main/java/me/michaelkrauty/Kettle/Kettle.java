@@ -7,7 +7,6 @@ import me.michaelkrauty.Kettle.command.essential.TeleportHereCommand;
 import me.michaelkrauty.Kettle.command.factions.FactionsCommand;
 import me.michaelkrauty.Kettle.command.kettle.HelpCommand;
 import me.michaelkrauty.Kettle.command.kettle.KettleCommand;
-import me.michaelkrauty.Kettle.command.kettle.PluginCommand;
 import me.michaelkrauty.Kettle.command.kettle.TestCommand;
 import me.michaelkrauty.Kettle.file.ConfigFile;
 import me.michaelkrauty.Kettle.file.LangFile;
@@ -16,6 +15,7 @@ import me.michaelkrauty.Kettle.file.PlayerFile;
 import me.michaelkrauty.Kettle.listener.BlockListener;
 import me.michaelkrauty.Kettle.listener.PlayerListener;
 import me.michaelkrauty.Kettle.util.Error;
+import me.michaelkrauty.Kettle.util.SQL;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -32,11 +32,16 @@ import java.util.logging.Logger;
  */
 public class Kettle extends JavaPlugin {
 
-	public static final Logger log = Logger.getLogger("Minecraft");
-	public final ConfigFile configFile = new ConfigFile(this);
-	public final PlayerFile playerFile = new PlayerFile(this);
-	public final MotdFile motdFile = new MotdFile(this);
-	public final LangFile langFile = new LangFile(this);
+	public static Kettle kettle;
+
+	public static final Logger log = Logger.getLogger("MC");
+	public ConfigFile configFile;
+	public PlayerFile playerFile;
+	public MotdFile motdFile;
+	public LangFile langFile;
+
+	public SQL sql;
+
 	public static ArrayList<String> enabledPlugins;
 
 	public final me.michaelkrauty.Kettle.util.Error error = new Error(this);
@@ -44,17 +49,17 @@ public class Kettle extends JavaPlugin {
 	private final PlayerListener playerListener = new PlayerListener(this);
 	private final BlockListener blockListener = new BlockListener(this);
 
-	public static final String[] validPlugins = new String[]{
-			"essential",
-			"factions"
-	};
-
 	public void onEnable() {
-
+		kettle = this;
 		checkDirectories();
-		getEnabledPlugins();
 		registerEvents();
 		registerCommands();
+
+		configFile = new ConfigFile(this);
+		playerFile = new PlayerFile(this);
+		motdFile = new MotdFile(this);
+		langFile = new LangFile(this);
+		sql = new SQL(this);
 
 		PluginDescriptionFile pdfFile = this.getDescription();
 		log.info("Kettle version " + pdfFile.getVersion() + " enabled!");
@@ -63,17 +68,6 @@ public class Kettle extends JavaPlugin {
 	public void onDisable() {
 		PluginDescriptionFile pdfFile = this.getDescription();
 		log.info(pdfFile.getName() + " version " + pdfFile.getVersion() + " disabled!");
-	}
-
-	private void getEnabledPlugins() {
-		try {
-			enabledPlugins = configFile.getEnabledPlugins();
-			for (String name : enabledPlugins) {
-				log.info("[Kettle] Enabled Plugin: " + name);
-			}
-		} catch (Exception e) {
-			log.info("[Kettle] No plugins enabled!");
-		}
 	}
 
 	private void registerEvents() {
@@ -88,33 +82,22 @@ public class Kettle extends JavaPlugin {
 		new KettleCommand("kettle", "/<command> [args]", "The Kettle Command", this).register();
 		new HelpCommand("help", "/<command> [args]", "Help Command", this).register();
 		new TestCommand("test", "/<command> [args]", "Test Command", this).register();
-		new PluginCommand("plugin", "/<command> [args]", "Plugin Command", this).register();
 
 		/** Essential commands */
-		if (enabledPlugins.contains("essential")) {
-			new MotdCommand("motd", "/<command> [args]", "MOTD Command", this).register();
-			new TeleportCommand("teleport", "/<command> [args]", "Teleport Command", Arrays.asList("tp", "tele"), this).register();
-			new TeleportHereCommand("teleporthere", "/<command> [args]", "Teleport Here Command", Arrays.asList("tph", "tphere"), this);
-			new GamemodeCommand("gamemode", "/<command> [args]", "Gamemode Command", Arrays.asList("gm"), this);
-		}
+		new MotdCommand("motd", "/<command> [args]", "MOTD Command", this).register();
+		new TeleportCommand("teleport", "/<command> [args]", "Teleport Command", Arrays.asList("tp", "tele"), this).register();
+		new TeleportHereCommand("teleporthere", "/<command> [args]", "Teleport Here Command", Arrays.asList("tph", "tphere"), this).register();
+		new GamemodeCommand("gamemode", "/<command> [args]", "Gamemode Command", Arrays.asList("gm"), this).register();
 
 		/** Factions commands */
-		if (enabledPlugins.contains("factions")) {
-			new FactionsCommand("factions", "/<command> [args]", "The factions command", Arrays.asList("f", "faction"), this).register();
-		}
+		new FactionsCommand("factions", "/<command> [args]", "The factions command", Arrays.asList("f", "faction"), this).register();
 	}
 
-	public static boolean isValidPlugin(String plugin) {
-		for (String plu : validPlugins) {
-			if (plugin.equalsIgnoreCase(plu)) {
-				return true;
-			}
+	public void checkDirectories() {
+		if (!getDataFolder().exists()) {
+			getDataFolder().mkdir();
 		}
-		return false;
-	}
-
-	private void checkDirectories() {
-		File playerDir = new File("plugins/Kettle/players");
+		File playerDir = new File(getDataFolder() + "/players");
 		if (!playerDir.exists()) {
 			playerDir.mkdir();
 		}
