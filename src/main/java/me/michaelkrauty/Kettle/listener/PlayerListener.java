@@ -1,12 +1,14 @@
 package me.michaelkrauty.Kettle.listener;
 
 import me.michaelkrauty.Kettle.Kettle;
-import me.michaelkrauty.Kettle.util.AsyncLoginStuff;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerLoginEvent;
+
+import java.util.UUID;
 
 /**
  * Created on 5/21/2014.
@@ -22,19 +24,32 @@ public class PlayerListener implements Listener {
 	}
 
 	@EventHandler
-	public void onPlayerLogin(PlayerLoginEvent event) {
-		Player player = event.getPlayer();
+	public void onPlayerJoin(PlayerJoinEvent event) {
+		final Player player = event.getPlayer();
+		kettle.sql.openConnection();
 		if (!kettle.sql.userExists(player.getUniqueId())) {
 			kettle.sql.addUser(player.getUniqueId());
 		}
-		new AsyncLoginStuff(kettle, player.getUniqueId());
+		UUID uuid = player.getUniqueId();
+		kettle.sql.updateUsername(uuid);
+		kettle.sql.updateIP(uuid, player.getAddress());
+		kettle.sql.updateLastLogin(uuid);
+		kettle.sql.closeConnection();
+		kettle.getServer().getScheduler().scheduleSyncDelayedTask(kettle, new Runnable() {
+			@Override
+			public void run() {
+				for (String line : kettle.motdFile.getMOTD()) {
+					player.sendMessage(line);
+				}
+			}
+		}, 20);
 	}
 
 	@EventHandler
-	public void onPlayerJoin(PlayerJoinEvent event) {
-		Player player = event.getPlayer();
-		for (String line : kettle.motdFile.getMOTD()) {
-			player.sendMessage(line);
+	public void onAsyncPlayerChat(AsyncPlayerChatEvent event) {
+		if (kettle.mutedPlayers.contains(event.getPlayer())) {
+			event.setCancelled(true);
+			event.getPlayer().sendMessage(ChatColor.RED + "You can't talk, you're muted!");
 		}
 	}
 }

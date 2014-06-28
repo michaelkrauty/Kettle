@@ -1,9 +1,6 @@
 package me.michaelkrauty.Kettle;
 
-import me.michaelkrauty.Kettle.command.essential.GamemodeCommand;
-import me.michaelkrauty.Kettle.command.essential.MotdCommand;
-import me.michaelkrauty.Kettle.command.essential.TeleportCommand;
-import me.michaelkrauty.Kettle.command.essential.TeleportHereCommand;
+import me.michaelkrauty.Kettle.command.essential.*;
 import me.michaelkrauty.Kettle.command.factions.FactionsCommand;
 import me.michaelkrauty.Kettle.command.kettle.HelpCommand;
 import me.michaelkrauty.Kettle.command.kettle.KettleCommand;
@@ -16,6 +13,7 @@ import me.michaelkrauty.Kettle.listener.BlockListener;
 import me.michaelkrauty.Kettle.listener.PlayerListener;
 import me.michaelkrauty.Kettle.util.Error;
 import me.michaelkrauty.Kettle.util.SQL;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -44,6 +42,8 @@ public class Kettle extends JavaPlugin {
 
 	public static ArrayList<String> enabledPlugins;
 
+	public static ArrayList<Player> mutedPlayers = new ArrayList<Player>();
+
 	public final me.michaelkrauty.Kettle.util.Error error = new Error(this);
 
 	private final PlayerListener playerListener = new PlayerListener(this);
@@ -66,6 +66,7 @@ public class Kettle extends JavaPlugin {
 	}
 
 	public void onDisable() {
+		kettle.sql.closeConnection();
 		PluginDescriptionFile pdfFile = this.getDescription();
 		log.info(pdfFile.getName() + " version " + pdfFile.getVersion() + " disabled!");
 	}
@@ -88,9 +89,10 @@ public class Kettle extends JavaPlugin {
 		new TeleportCommand("teleport", "/<command> [args]", "Teleport Command", Arrays.asList("tp", "tele"), this).register();
 		new TeleportHereCommand("teleporthere", "/<command> [args]", "Teleport Here Command", Arrays.asList("tph", "tphere"), this).register();
 		new GamemodeCommand("gamemode", "/<command> [args]", "Gamemode Command", Arrays.asList("gm"), this).register();
+		new MuteCommand("mute", "/<command> [args]", "Mute Command", this).register();
 
 		/** Factions commands */
-		new FactionsCommand("factions", "/<command> [args]", "The factions command", Arrays.asList("f", "faction"), this).register();
+		new FactionsCommand("factions", "/<command> [args]", "The factions command", Arrays.asList("f", "faction", "fac"), this).register();
 	}
 
 	public void checkDirectories() {

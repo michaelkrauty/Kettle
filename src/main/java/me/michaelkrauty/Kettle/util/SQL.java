@@ -18,12 +18,14 @@ public class SQL {
 
 	public SQL(Kettle instance) {
 		kettle = instance;
+		openConnection();
 		checkTables();
+		closeConnection();
 	}
 
 	private Connection connection;
 
-	private synchronized boolean openConnection() {
+	public synchronized boolean openConnection() {
 		try {
 			connection = DriverManager.getConnection("jdbc:mysql://192.187.118.202:3306/KettleTest", kettle.configFile.getString("db_user"), kettle.configFile.getString("db_pass"));
 		} catch (Exception e) {
@@ -33,7 +35,7 @@ public class SQL {
 		return true;
 	}
 
-	private synchronized void closeConnection() {
+	public synchronized void closeConnection() {
 		try {
 			if (connection != null) {
 				connection.close();
@@ -44,33 +46,24 @@ public class SQL {
 	}
 
 	private synchronized boolean checkTables() {
-		if (openConnection()) {
-			boolean res = true;
-			try {
-				PreparedStatement stmt = connection.prepareStatement("CREATE TABLE IF NOT EXISTS `users` (uuid varchar(256) PRIMARY KEY, username varchar(256), ip varchar(256), firstlogin long, lastlogin long);");
-				stmt.execute();
-			} catch (Exception e) {
-				e.printStackTrace();
-				res = false;
-			}
-			closeConnection();
-			return res;
+		boolean res = true;
+		try {
+			PreparedStatement stmt = connection.prepareStatement("CREATE TABLE IF NOT EXISTS `users` (uuid varchar(256) PRIMARY KEY, username varchar(256), ip varchar(256), firstlogin long, lastlogin long);");
+			stmt.execute();
+		} catch (Exception e) {
+			e.printStackTrace();
+			res = false;
 		}
-		return false;
+		return res;
 	}
 
 	public synchronized boolean userExists(UUID userUUID) {
-		openConnection();
 		try {
 			PreparedStatement sql = connection
 					.prepareStatement("SELECT * FROM `users` WHERE UUID=?;");
 			sql.setString(1, userUUID.toString());
 			ResultSet resultSet = sql.executeQuery();
 			boolean containsServer = resultSet.next();
-
-			sql.close();
-			resultSet.close();
-			closeConnection();
 
 			return containsServer;
 		} catch (Exception e) {
@@ -82,7 +75,6 @@ public class SQL {
 	public synchronized void addUser(UUID uuid) {
 		try {
 			if (!userExists(uuid)) {
-				openConnection();
 				PreparedStatement sql = connection.prepareStatement("INSERT INTO `users`(`uuid`, `username`, `ip`, `firstlogin`, `lastlogin`) VALUES (?,?,?,?,?)");
 				sql.setString(1, uuid.toString());
 				sql.setString(2, kettle.getServer().getPlayer(uuid).getName());
@@ -95,15 +87,12 @@ public class SQL {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-		} finally {
-			closeConnection();
 		}
 	}
 
 	public synchronized HashMap<String, Object> getUser(UUID uuid) {
 		try {
 			if (userExists(uuid)) {
-				openConnection();
 				PreparedStatement sql = connection.prepareStatement("SELECT * FROM `users` WHERE `uuid`=?");
 				sql.setString(1, uuid.toString());
 
@@ -119,56 +108,45 @@ public class SQL {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-		} finally {
-			closeConnection();
 		}
 		return null;
 	}
 
 	public synchronized boolean updateUsername(UUID uuid) {
 		try {
-				openConnection();
-				PreparedStatement sql = connection.prepareStatement("UPDATE `users` SET `username`=? WHERE `uuid`=?");
-				sql.setString(1, kettle.getServer().getPlayer(uuid).getName());
-				sql.setString(2, uuid.toString());
-				sql.executeUpdate();
-				return true;
+			PreparedStatement sql = connection.prepareStatement("UPDATE `users` SET `username`=? WHERE `uuid`=?");
+			sql.setString(1, kettle.getServer().getPlayer(uuid).getName());
+			sql.setString(2, uuid.toString());
+			sql.executeUpdate();
+			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
-		} finally {
-			closeConnection();
 		}
 		return false;
 	}
 
-	public synchronized boolean updateIP(UUID uuid) {
+	public synchronized boolean updateIP(UUID uuid, InetSocketAddress address) {
 		try {
-				openConnection();
-				PreparedStatement sql = connection.prepareStatement("UPDATE `users` SET `ip`=? WHERE `uuid`=?");
-				sql.setString(1, kettle.getServer().getPlayer(uuid).getAddress().toString());
-				sql.setString(2, uuid.toString());
-				sql.executeUpdate();
-				return true;
+			PreparedStatement sql = connection.prepareStatement("UPDATE `users` SET `ip`=? WHERE `uuid`=?");
+			sql.setString(1, address.toString());
+			sql.setString(2, uuid.toString());
+			sql.executeUpdate();
+			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
-		} finally {
-			closeConnection();
 		}
 		return false;
 	}
 
 	public synchronized boolean updateLastLogin(UUID uuid) {
 		try {
-				openConnection();
-				PreparedStatement sql = connection.prepareStatement("UPDATE `users` SET `lastlogin`=? WHERE `uuid`=?");
-				sql.setLong(1, System.currentTimeMillis());
-				sql.setString(2, uuid.toString());
-				sql.executeUpdate();
-				return true;
+			PreparedStatement sql = connection.prepareStatement("UPDATE `users` SET `lastlogin`=? WHERE `uuid`=?");
+			sql.setLong(1, System.currentTimeMillis());
+			sql.setString(2, uuid.toString());
+			sql.executeUpdate();
+			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
-		} finally {
-			closeConnection();
 		}
 		return false;
 	}

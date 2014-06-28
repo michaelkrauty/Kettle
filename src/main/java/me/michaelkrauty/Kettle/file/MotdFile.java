@@ -51,7 +51,7 @@ public class MotdFile {
 			String sCurrentLine;
 			br = new BufferedReader(new FileReader(motdFile));
 			while ((sCurrentLine = br.readLine()) != null) {
-				motd.add(sCurrentLine);
+				motd.add(kettle.format(sCurrentLine));
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
