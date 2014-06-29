@@ -27,6 +27,10 @@ public class SQL {
 	public synchronized boolean openConnection() {
 		try {
 			connection = DriverManager.getConnection("jdbc:mysql://192.187.118.202:3306/KettleTest", kettle.configFile.getString("db_user"), kettle.configFile.getString("db_pass"));
+			if (connection == null) {
+				System.out.println("KETTLE COULD NOT CONNECT TO SQL DATABSE! SHUTTING DOWN.");
+				kettle.getServer().shutdown();
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
@@ -83,7 +87,6 @@ public class SQL {
 				sql.setLong(6, System.currentTimeMillis());
 
 				int res = sql.executeUpdate();
-				System.out.println(res);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

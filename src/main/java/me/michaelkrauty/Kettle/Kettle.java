@@ -2,20 +2,22 @@ package me.michaelkrauty.Kettle;
 
 import me.michaelkrauty.Kettle.command.essential.*;
 import me.michaelkrauty.Kettle.command.factions.FactionsCommand;
-import me.michaelkrauty.Kettle.command.kettle.HelpCommand;
 import me.michaelkrauty.Kettle.command.kettle.KettleCommand;
 import me.michaelkrauty.Kettle.command.kettle.TestCommand;
-import me.michaelkrauty.Kettle.file.*;
+import me.michaelkrauty.Kettle.command.worlds.WorldCommand;
+import me.michaelkrauty.Kettle.file.ConfigFile;
+import me.michaelkrauty.Kettle.file.DataFile;
+import me.michaelkrauty.Kettle.file.LangFile;
+import me.michaelkrauty.Kettle.file.MotdFile;
 import me.michaelkrauty.Kettle.listener.BlockListener;
 import me.michaelkrauty.Kettle.listener.PlayerListener;
 import me.michaelkrauty.Kettle.util.Error;
 import me.michaelkrauty.Kettle.util.SQL;
-import org.bukkit.entity.Player;
+import org.bukkit.Location;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.logging.Logger;
@@ -31,9 +33,9 @@ public class Kettle extends JavaPlugin {
 
 	public static final Logger log = Logger.getLogger("MC");
 	public ConfigFile configFile;
-	public PlayerFile playerFile;
 	public MotdFile motdFile;
 	public LangFile langFile;
+	public DataFile dataFile;
 
 	public SQL sql;
 
@@ -55,9 +57,9 @@ public class Kettle extends JavaPlugin {
 		registerCommands();
 
 		configFile = new ConfigFile(this);
-		playerFile = new PlayerFile(this);
 		motdFile = new MotdFile(this);
 		langFile = new LangFile(this);
+		dataFile = new DataFile(this);
 		sql = new SQL(this);
 
 		PluginDescriptionFile pdfFile = this.getDescription();
@@ -80,7 +82,7 @@ public class Kettle extends JavaPlugin {
 
 		/** Default kettle commands */
 		new KettleCommand("kettle", "/<command> [args]", "The Kettle Command", this).register();
-		new HelpCommand("help", "/<command> [args]", "Help Command", this).register();
+		// new HelpCommand("help", "/<command> [args]", "Help Command", this).register();
 		new TestCommand("test", "/<command> [args]", "Test Command", this).register();
 
 		/** Essential commands */
@@ -90,6 +92,9 @@ public class Kettle extends JavaPlugin {
 		new GamemodeCommand("gamemode", "/<command> [args]", "Gamemode Command", Arrays.asList("gm"), this).register();
 		new MuteCommand("mute", "/<command> [args]", "Mute Command", this).register();
 		new AdminLoginCommand("admin", "/admin <password>", "Login as adin", this).register();
+		new SpawnCommand("spawn", "/<command>", "Spawn Command", this).register();
+		new SetspawnCommand("setspawn", "/<command>", "SetSpawn Command", this).register();
+		new WorldCommand("world", "/<command> [args]", "World Command", this).register();
 
 		/** Factions commands */
 		new FactionsCommand("factions", "/<command> [args]", "The factions command", Arrays.asList("f", "faction", "fac"), this).register();
@@ -99,10 +104,21 @@ public class Kettle extends JavaPlugin {
 		if (!getDataFolder().exists()) {
 			getDataFolder().mkdir();
 		}
-		File playerDir = new File(getDataFolder() + "/players");
-		if (!playerDir.exists()) {
-			playerDir.mkdir();
-		}
+	}
+
+	public String locationToString(Location loc) {
+		String world = loc.getWorld().getName();
+		int x = loc.getBlockX();
+		int y = loc.getBlockY();
+		int z = loc.getBlockZ();
+		return world + "," + x + "," + y + "," + z;
+	}
+
+	public Location getSpawnLocation() {
+		if (dataFile.getLocation("spawn") != null)
+			return dataFile.getLocation("spawn");
+		else
+			return getServer().getWorlds().get(0).getSpawnLocation();
 	}
 
 	public static final String format(String str) {

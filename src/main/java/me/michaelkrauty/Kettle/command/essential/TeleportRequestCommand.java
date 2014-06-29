@@ -34,7 +34,7 @@ public class TeleportRequestCommand extends AbstractCommand {
 		Player player = (Player) sender;
 		if (kettle.getServer().getPlayer(args[0]) instanceof Player) {
 			Player target = kettle.getServer().getPlayer(args[0]);
-			if (kettle.playerFile.getPlayer(target).get("teleportEnabled").equalsIgnoreCase("true")) {
+			if ((Boolean) kettle.sql.getUser(target.getUniqueId()).get("teleportenabled")) {
 				// TODO: tpa
 			} else {
 				// target's teleportion is disabled

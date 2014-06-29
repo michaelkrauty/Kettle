@@ -7,6 +7,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 
 import java.util.UUID;
 
@@ -48,6 +49,13 @@ public class PlayerListener implements Listener {
 		if (kettle.mutedPlayers.contains(event.getPlayer().getName())) {
 			event.setCancelled(true);
 			event.getPlayer().sendMessage(ChatColor.RED + "You can't talk, you're muted!");
+		}
+	}
+
+	@EventHandler
+	public void onPlayerRespawn(PlayerRespawnEvent event) {
+		if (kettle.dataFile.getLocation("spawn") != null) {
+			event.setRespawnLocation(kettle.dataFile.getLocation("spawn"));
 		}
 	}
 }

@@ -2,8 +2,10 @@ package me.michaelkrauty.Kettle.command.kettle;
 
 import me.michaelkrauty.Kettle.Kettle;
 import me.michaelkrauty.Kettle.util.AbstractCommand;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 /**
  * Created on 5/20/2014.
@@ -20,15 +22,13 @@ public class KettleCommand extends AbstractCommand {
 	}
 
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
-		sender.sendMessage("Kettle version " + kettle.getDescription().getVersion());
-		String plugins;
-		try {
-			plugins = kettle.enabledPlugins.toString();
-		} catch (Exception e) {
-			plugins = "none";
+		if (!(sender instanceof Player)) {
+			return true;
 		}
-		sender.sendMessage("Enabled Plugins: " + plugins);
-		sender.sendMessage("Config Version: " + kettle.configFile.getString("config_version"));
+		if (args.length == 0) {
+			sender.sendMessage(ChatColor.GREEN + "Kettle version " + kettle.getDescription().getVersion());
+			return true;
+		}
 		return true;
 	}
 }

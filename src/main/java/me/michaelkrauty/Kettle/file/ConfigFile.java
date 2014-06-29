@@ -2,12 +2,11 @@ package me.michaelkrauty.Kettle.file;
 
 import me.michaelkrauty.Kettle.Kettle;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.inventory.ItemStack;
 
-import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
  * Created on 5/20/2014.
@@ -48,7 +47,7 @@ public class ConfigFile {
 	public void reload() {
 		try {
 			config.load(configFile);
-		} catch(Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
