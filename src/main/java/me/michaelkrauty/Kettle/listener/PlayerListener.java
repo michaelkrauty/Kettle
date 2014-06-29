@@ -26,7 +26,6 @@ public class PlayerListener implements Listener {
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		final Player player = event.getPlayer();
-		kettle.sql.openConnection();
 		if (!kettle.sql.userExists(player.getUniqueId())) {
 			kettle.sql.addUser(player.getUniqueId());
 		}
@@ -34,7 +33,6 @@ public class PlayerListener implements Listener {
 		kettle.sql.updateUsername(uuid);
 		kettle.sql.updateIP(uuid, player.getAddress());
 		kettle.sql.updateLastLogin(uuid);
-		kettle.sql.closeConnection();
 		kettle.getServer().getScheduler().scheduleSyncDelayedTask(kettle, new Runnable() {
 			@Override
 			public void run() {
@@ -47,7 +45,7 @@ public class PlayerListener implements Listener {
 
 	@EventHandler
 	public void onAsyncPlayerChat(AsyncPlayerChatEvent event) {
-		if (kettle.mutedPlayers.contains(event.getPlayer())) {
+		if (kettle.mutedPlayers.contains(event.getPlayer().getName())) {
 			event.setCancelled(true);
 			event.getPlayer().sendMessage(ChatColor.RED + "You can't talk, you're muted!");
 		}

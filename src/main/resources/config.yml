@@ -1,2 +1,6 @@
 db_user: kettle
 db_pass: 1234
+
+### CHANGE THIS PASSWORD ###
+# This is the password admins will use to execute admin commands
+superuser_pass: 12345

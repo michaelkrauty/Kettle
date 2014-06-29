@@ -20,7 +20,6 @@ public class SQL {
 		kettle = instance;
 		openConnection();
 		checkTables();
-		closeConnection();
 	}
 
 	private Connection connection;
@@ -48,7 +47,7 @@ public class SQL {
 	private synchronized boolean checkTables() {
 		boolean res = true;
 		try {
-			PreparedStatement stmt = connection.prepareStatement("CREATE TABLE IF NOT EXISTS `users` (uuid varchar(256) PRIMARY KEY, username varchar(256), ip varchar(256), firstlogin long, lastlogin long);");
+			PreparedStatement stmt = connection.prepareStatement("CREATE TABLE IF NOT EXISTS `users` (uuid varchar(256) PRIMARY KEY, username varchar(256), admin tinyint, ip varchar(256), firstlogin long, lastlogin long);");
 			stmt.execute();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -75,12 +74,13 @@ public class SQL {
 	public synchronized void addUser(UUID uuid) {
 		try {
 			if (!userExists(uuid)) {
-				PreparedStatement sql = connection.prepareStatement("INSERT INTO `users`(`uuid`, `username`, `ip`, `firstlogin`, `lastlogin`) VALUES (?,?,?,?,?)");
+				PreparedStatement sql = connection.prepareStatement("INSERT INTO `users`(`uuid`, `username`, `admin`, `ip`, `firstlogin`, `lastlogin`) VALUES (?,?,?,?,?,?)");
 				sql.setString(1, uuid.toString());
 				sql.setString(2, kettle.getServer().getPlayer(uuid).getName());
-				sql.setString(3, kettle.getServer().getPlayer(uuid).getAddress().toString());
-				sql.setLong(4, System.currentTimeMillis());
+				sql.setBoolean(3, false);
+				sql.setString(4, kettle.getServer().getPlayer(uuid).getAddress().toString());
 				sql.setLong(5, System.currentTimeMillis());
+				sql.setLong(6, System.currentTimeMillis());
 
 				int res = sql.executeUpdate();
 				System.out.println(res);
@@ -90,7 +90,7 @@ public class SQL {
 		}
 	}
 
-	public synchronized HashMap<String, Object> getUser(UUID uuid) {
+	public synchronized HashMap getUser(UUID uuid) {
 		try {
 			if (userExists(uuid)) {
 				PreparedStatement sql = connection.prepareStatement("SELECT * FROM `users` WHERE `uuid`=?");
@@ -98,12 +98,13 @@ public class SQL {
 
 				ResultSet res = sql.executeQuery();
 				res.next();
-				HashMap<String, Object> ret = new HashMap<String, Object>();
+				HashMap ret = new HashMap();
 				ret.put("uuid", UUID.fromString(res.getString("uuid")));
 				ret.put("username", res.getString("username"));
 				ret.put("ip", new InetSocketAddress(res.getString("ip").split(":")[0].replace("/", ""), Integer.parseInt(res.getString("ip").split(":")[1])));
 				ret.put("firstlogin", new Date(res.getLong("firstlogin")));
 				ret.put("lastlogin", new Date(res.getLong("lastlogin")));
+				ret.put("admin", res.getBoolean("admin"));
 				return ret;
 			}
 		} catch (Exception e) {
@@ -112,6 +113,9 @@ public class SQL {
 		return null;
 	}
 
+	/**
+	 * UPDATE
+	 */
 	public synchronized boolean updateUsername(UUID uuid) {
 		try {
 			PreparedStatement sql = connection.prepareStatement("UPDATE `users` SET `username`=? WHERE `uuid`=?");

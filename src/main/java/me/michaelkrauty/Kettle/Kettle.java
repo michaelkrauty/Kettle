@@ -5,10 +5,7 @@ import me.michaelkrauty.Kettle.command.factions.FactionsCommand;
 import me.michaelkrauty.Kettle.command.kettle.HelpCommand;
 import me.michaelkrauty.Kettle.command.kettle.KettleCommand;
 import me.michaelkrauty.Kettle.command.kettle.TestCommand;
-import me.michaelkrauty.Kettle.file.ConfigFile;
-import me.michaelkrauty.Kettle.file.LangFile;
-import me.michaelkrauty.Kettle.file.MotdFile;
-import me.michaelkrauty.Kettle.file.PlayerFile;
+import me.michaelkrauty.Kettle.file.*;
 import me.michaelkrauty.Kettle.listener.BlockListener;
 import me.michaelkrauty.Kettle.listener.PlayerListener;
 import me.michaelkrauty.Kettle.util.Error;
@@ -42,7 +39,9 @@ public class Kettle extends JavaPlugin {
 
 	public static ArrayList<String> enabledPlugins;
 
-	public static ArrayList<Player> mutedPlayers = new ArrayList<Player>();
+	public static ArrayList<String> admins = new ArrayList<String>();
+
+	public static ArrayList<String> mutedPlayers = new ArrayList<String>();
 
 	public final me.michaelkrauty.Kettle.util.Error error = new Error(this);
 
@@ -90,6 +89,7 @@ public class Kettle extends JavaPlugin {
 		new TeleportHereCommand("teleporthere", "/<command> [args]", "Teleport Here Command", Arrays.asList("tph", "tphere"), this).register();
 		new GamemodeCommand("gamemode", "/<command> [args]", "Gamemode Command", Arrays.asList("gm"), this).register();
 		new MuteCommand("mute", "/<command> [args]", "Mute Command", this).register();
+		new AdminLoginCommand("admin", "/admin <password>", "Login as adin", this).register();
 
 		/** Factions commands */
 		new FactionsCommand("factions", "/<command> [args]", "The factions command", Arrays.asList("f", "faction", "fac"), this).register();

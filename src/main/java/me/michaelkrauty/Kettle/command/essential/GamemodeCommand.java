@@ -32,7 +32,7 @@ public class GamemodeCommand extends AbstractCommand {
 			if (sender instanceof Player) {
 				Player player = (Player) sender;
 				if (args[0].equalsIgnoreCase("s") || args[0].equalsIgnoreCase("survival") || args[0].equalsIgnoreCase("0")) {
-					if (sender.hasPermission("kettle.gamemode.self.survival")) {
+					if (kettle.admins.contains(player.getName())) {
 						player.setGameMode(GameMode.SURVIVAL);
 						sender.sendMessage(kettle.langFile.getString("gamemode", "success_survival"));
 					} else {
@@ -41,7 +41,7 @@ public class GamemodeCommand extends AbstractCommand {
 					}
 				}
 				if (args[0].equalsIgnoreCase("c") || args[0].equalsIgnoreCase("creative") || args[0].equalsIgnoreCase("1")) {
-					if (sender.hasPermission("kettle.gamemode.self.creative")) {
+					if (kettle.admins.contains(player.getName())) {
 						player.setGameMode(GameMode.CREATIVE);
 						sender.sendMessage(kettle.langFile.getString("gamemode", "success_creative"));
 					} else {

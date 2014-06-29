@@ -7,6 +7,8 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
+
 /**
  * Created on 6/28/2014.
  *
@@ -26,26 +28,29 @@ public class MuteCommand extends AbstractCommand {
 			sender.sendMessage(ChatColor.RED + "/mute <player>");
 			return true;
 		}
-		if (kettle.getServer().getPlayer(args[0]) instanceof Player) {
-			if (!kettle.mutedPlayers.contains(sender))
-				kettle.mutedPlayers.add((Player) sender);
-			else
-				kettle.mutedPlayers.remove(sender);
-		}
 		if (args[0].equalsIgnoreCase("list")) {
 			String players = "";
 			if (kettle.mutedPlayers.size() != 0) {
 				for (int i = 0; i < kettle.mutedPlayers.size(); i++) {
-					if (i != 0) {
-						players = players + kettle.mutedPlayers.get(i).getName() + ", ";
+					if (i != kettle.mutedPlayers.size() - 1) {
+						players = players + kettle.mutedPlayers.get(i) + ", ";
 					} else {
-						players = players + kettle.mutedPlayers.get(i).getName();
+						players = players + kettle.mutedPlayers.get(i);
 					}
 				}
 			} else {
 				players = "none";
 			}
 			sender.sendMessage(ChatColor.GRAY + players);
+		}
+
+		if (kettle.getServer().getPlayer(args[0]) instanceof Player) {
+			Player target = kettle.getServer().getPlayer(args[0]);
+			ArrayList<String> muted = kettle.mutedPlayers;
+			if (!muted.contains(target.getName()))
+				muted.add(target.getName());
+			else
+				muted.remove(target.getName());
 		}
 		return true;
 	}
