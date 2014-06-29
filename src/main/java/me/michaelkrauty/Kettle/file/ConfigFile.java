@@ -55,4 +55,8 @@ public class ConfigFile {
 	public String getString(String path) {
 		return config.getString(path);
 	}
+
+	public long getLong(String path) {
+		return config.getLong(path);
+	}
 }

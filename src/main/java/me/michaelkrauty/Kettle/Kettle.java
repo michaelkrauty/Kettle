@@ -4,6 +4,8 @@ import me.michaelkrauty.Kettle.command.essential.*;
 import me.michaelkrauty.Kettle.command.factions.FactionsCommand;
 import me.michaelkrauty.Kettle.command.kettle.KettleCommand;
 import me.michaelkrauty.Kettle.command.kettle.TestCommand;
+import me.michaelkrauty.Kettle.command.locker.CreateCommand;
+import me.michaelkrauty.Kettle.command.locker.LockerCommand;
 import me.michaelkrauty.Kettle.command.worlds.WorldCommand;
 import me.michaelkrauty.Kettle.file.ConfigFile;
 import me.michaelkrauty.Kettle.file.DataFile;
@@ -95,6 +97,7 @@ public class Kettle extends JavaPlugin {
 		new SpawnCommand("spawn", "/<command>", "Spawn Command", this).register();
 		new SetspawnCommand("setspawn", "/<command>", "SetSpawn Command", this).register();
 		new WorldCommand("world", "/<command> [args]", "World Command", this).register();
+		new LockerCommand("locker", "/<command>", "Locker Command", this).register();
 
 		/** Factions commands */
 		new FactionsCommand("factions", "/<command> [args]", "The factions command", Arrays.asList("f", "faction", "fac"), this).register();
@@ -145,5 +148,19 @@ public class Kettle extends JavaPlugin {
 				.replace("&n", "§n")
 				.replace("&o", "§o")
 				.replace("&r", "§r");
+	}
+
+	public DataFile getDataFile() {
+		return dataFile;
+	}
+
+
+
+	public ConfigFile getConfigFile() {
+		return configFile;
+	}
+
+	public void copyStats(Location loc1, Location loc2) {
+		getDataFile().set(locationToString(loc2), getDataFile().getString(locationToString(loc1)));
 	}
 }

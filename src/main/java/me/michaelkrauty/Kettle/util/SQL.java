@@ -1,6 +1,7 @@
 package me.michaelkrauty.Kettle.util;
 
 import me.michaelkrauty.Kettle.Kettle;
+import org.bukkit.Location;
 
 import java.net.InetSocketAddress;
 import java.sql.*;
@@ -53,6 +54,8 @@ public class SQL {
 		try {
 			PreparedStatement stmt = connection.prepareStatement("CREATE TABLE IF NOT EXISTS `users` (uuid varchar(256) PRIMARY KEY, username varchar(256), admin tinyint, ip varchar(256), firstlogin long, lastlogin long);");
 			stmt.execute();
+			stmt = connection.prepareStatement("CREATE TABLE IF NOT EXISTS `lockers` (location varchar(256) PRIMARY KEY, owner varchar(256), users varchar(256), expiry long);");
+			stmt.execute();
 		} catch (Exception e) {
 			e.printStackTrace();
 			res = false;
@@ -75,6 +78,21 @@ public class SQL {
 		}
 	}
 
+	public synchronized boolean lockerExists(Location location) {
+		try {
+			PreparedStatement sql = connection
+					.prepareStatement("SELECT * FROM `lockers` WHERE location=?;");
+			sql.setString(1, kettle.locationToString(location));
+			ResultSet resultSet = sql.executeQuery();
+			boolean contains = resultSet.next();
+
+			return contains;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+
 	public synchronized void addUser(UUID uuid) {
 		try {
 			if (!userExists(uuid)) {
@@ -85,8 +103,22 @@ public class SQL {
 				sql.setString(4, kettle.getServer().getPlayer(uuid).getAddress().toString());
 				sql.setLong(5, System.currentTimeMillis());
 				sql.setLong(6, System.currentTimeMillis());
+				sql.executeUpdate();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
-				int res = sql.executeUpdate();
+	public synchronized void addLocker(Location location, String owner, long expiry) {
+		try {
+			if (!lockerExists(location)) {
+				PreparedStatement sql = connection.prepareStatement("INSERT INTO `lockers`(`location`, `owner`, `users`, `expiry`) VALUES (?,?,?,?)");
+				sql.setString(1, kettle.locationToString(location));
+				sql.setString(2, owner);
+				sql.setString(3, owner);
+				sql.setLong(4, expiry);
+				sql.executeUpdate();
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -116,12 +148,59 @@ public class SQL {
 		return null;
 	}
 
-	/**
-	 * UPDATE
-	 */
+	public synchronized HashMap getLocker(Location location) {
+		try {
+			if (lockerExists(location)) {
+				PreparedStatement sql = connection.prepareStatement("SELECT * FROM `lockers` WHERE `location`=?;");
+				sql.setString(1, kettle.locationToString(location));
+
+				ResultSet res = sql.executeQuery();
+				res.next();
+				HashMap ret = new HashMap();
+				ret.put("owner", res.getString("owner"));
+				ret.put("users", res.getString("users"));
+				ret.put("expiry", res.getLong("expiry"));
+				return ret;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public synchronized boolean removeLocker(Location location) {
+		try {
+			if (lockerExists(location)) {
+				PreparedStatement sql = connection.prepareStatement("DELETE FROM `lockers` WHERE `location`=?;");
+				sql.setString(1, kettle.locationToString(location));
+				return sql.execute();
+			}
+			return false;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	public synchronized boolean updateLockerUsers(Location location, String users) {
+		try {
+			if (lockerExists(location)) {
+				PreparedStatement sql = connection.prepareStatement("UPDATE `lockers` SET `users`=?, WHERE `location`=?");
+				sql.setString(1, users);
+				sql.setString(2, kettle.locationToString(location));
+				sql.executeUpdate();
+				return true;
+			}
+			return false;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
 	public synchronized boolean updateUsername(UUID uuid) {
 		try {
-			PreparedStatement sql = connection.prepareStatement("UPDATE `users` SET `username`=? WHERE `uuid`=?");
+			PreparedStatement sql = connection.prepareStatement("UPDATE `users` SET `username`=? WHERE `uuid`=?;");
 			sql.setString(1, kettle.getServer().getPlayer(uuid).getName());
 			sql.setString(2, uuid.toString());
 			sql.executeUpdate();
@@ -134,7 +213,7 @@ public class SQL {
 
 	public synchronized boolean updateIP(UUID uuid, InetSocketAddress address) {
 		try {
-			PreparedStatement sql = connection.prepareStatement("UPDATE `users` SET `ip`=? WHERE `uuid`=?");
+			PreparedStatement sql = connection.prepareStatement("UPDATE `users` SET `ip`=? WHERE `uuid`=?;");
 			sql.setString(1, address.toString());
 			sql.setString(2, uuid.toString());
 			sql.executeUpdate();
@@ -147,7 +226,7 @@ public class SQL {
 
 	public synchronized boolean updateLastLogin(UUID uuid) {
 		try {
-			PreparedStatement sql = connection.prepareStatement("UPDATE `users` SET `lastlogin`=? WHERE `uuid`=?");
+			PreparedStatement sql = connection.prepareStatement("UPDATE `users` SET `lastlogin`=? WHERE `uuid`=?;");
 			sql.setLong(1, System.currentTimeMillis());
 			sql.setString(2, uuid.toString());
 			sql.executeUpdate();
