@@ -26,7 +26,6 @@ public class HelpCommand extends AbstractCommand {
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
 		ArrayList<String> commands = new ArrayList<String>();
 		ArrayList<String> descriptions = new ArrayList<String>();
-		ArrayList<String> fulltexts = new ArrayList<String>();
 		for (HelpTopic helpTopic : kettle.getServer().getHelpMap().getHelpTopics()) {
 			commands.add(helpTopic.getName());
 			descriptions.add(helpTopic.getShortText());
