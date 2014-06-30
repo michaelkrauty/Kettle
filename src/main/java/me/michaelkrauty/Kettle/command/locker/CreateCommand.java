@@ -24,30 +24,30 @@ public class CreateCommand {
 			player.sendMessage(ChatColor.GRAY + "Make sure you're looking at a " + ChatColor.GREEN + "chest" + ChatColor.GRAY + " within " + ChatColor.GREEN + "10 blocks" + ChatColor.GRAY + " of you");
 			return;
 		}
-		if (kettle.sql.lockerExists(targetBlockLocation)) {
+		if (kettle.getLocker(targetBlockLocation) != null) {
 			player.sendMessage(ChatColor.GRAY + "That chest is already locked.");
 			return;
 		}
-		kettle.sql.addLocker(targetBlockLocation, player.getUniqueId().toString(), kettle.getConfigFile().getLong("chest_expiry"));
+		kettle.createLocker(targetBlockLocation, player);
 		World w = targetBlockLocation.getWorld();
 		int x = targetBlockLocation.getBlockX();
 		int y = targetBlockLocation.getBlockY();
 		int z = targetBlockLocation.getBlockZ();
 		if (w.getBlockAt(x + 1, y, z).getType() == Material.CHEST) {
 			Location loc = new Location(w, x + 1, y, z);
-			kettle.sql.addLocker(loc, player.getUniqueId().toString(), kettle.getConfigFile().getLong("chest_expiry"));
+			kettle.createLocker(loc, player);
 		}
 		if (w.getBlockAt(x - 1, y, z).getType() == Material.CHEST) {
 			Location loc = new Location(w, x - 1, y, z);
-			kettle.sql.addLocker(loc, player.getUniqueId().toString(), kettle.getConfigFile().getLong("chest_expiry"));
+			kettle.createLocker(loc, player);
 		}
 		if (w.getBlockAt(x, y, z + 1).getType() == Material.CHEST) {
 			Location loc = new Location(w, x, y, z + 1);
-			kettle.sql.addLocker(loc, player.getUniqueId().toString(), kettle.getConfigFile().getLong("chest_expiry"));
+			kettle.createLocker(loc, player);
 		}
 		if (w.getBlockAt(x, y, z - 1).getType() == Material.CHEST) {
 			Location loc = new Location(w, x, y, z - 1);
-			kettle.sql.addLocker(loc, player.getUniqueId().toString(), kettle.getConfigFile().getLong("chest_expiry"));
+			kettle.createLocker(loc, player);
 		}
 		player.sendMessage(ChatColor.GRAY + "You successfully locked that chest.");
 		return;

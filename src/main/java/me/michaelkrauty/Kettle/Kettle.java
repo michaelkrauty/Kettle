@@ -1,5 +1,6 @@
 package me.michaelkrauty.Kettle;
 
+import me.michaelkrauty.Kettle.Objects.Locker;
 import me.michaelkrauty.Kettle.command.essential.*;
 import me.michaelkrauty.Kettle.command.factions.FactionsCommand;
 import me.michaelkrauty.Kettle.command.kettle.KettleCommand;
@@ -15,7 +16,9 @@ import me.michaelkrauty.Kettle.listener.BlockListener;
 import me.michaelkrauty.Kettle.listener.PlayerListener;
 import me.michaelkrauty.Kettle.util.Error;
 import me.michaelkrauty.Kettle.util.SQL;
+import me.michaelkrauty.Kettle.util.Schedule;
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -40,8 +43,9 @@ public class Kettle extends JavaPlugin {
 	public DataFile dataFile;
 
 	public SQL sql;
+	public Schedule schedule;
 
-	public static ArrayList<String> enabledPlugins;
+	public ArrayList<Locker> lockers = new ArrayList<Locker>();
 
 	public static ArrayList<String> admins = new ArrayList<String>();
 
@@ -63,12 +67,20 @@ public class Kettle extends JavaPlugin {
 		langFile = new LangFile(this);
 		dataFile = new DataFile(this);
 		sql = new SQL(this);
+		schedule = new Schedule(this);
+
+		loadLockers();
 
 		PluginDescriptionFile pdfFile = this.getDescription();
 		log.info("Kettle version " + pdfFile.getVersion() + " enabled!");
 	}
 
 	public void onDisable() {
+		if (lockers.size() != 0) {
+			for (Locker locker : lockers) {
+				locker.unload();
+			}
+		}
 		kettle.sql.closeConnection();
 		PluginDescriptionFile pdfFile = this.getDescription();
 		log.info(pdfFile.getName() + " version " + pdfFile.getVersion() + " disabled!");
@@ -124,6 +136,10 @@ public class Kettle extends JavaPlugin {
 			return getServer().getWorlds().get(0).getSpawnLocation();
 	}
 
+	public ConfigFile getConfigFile() {
+		return configFile;
+	}
+
 	public static final String format(String str) {
 		return str
 				.replace("&0", "§0")
@@ -150,17 +166,43 @@ public class Kettle extends JavaPlugin {
 				.replace("&r", "§r");
 	}
 
-	public DataFile getDataFile() {
-		return dataFile;
+	public void loadLockers() {
+		if (!kettle.sql.getAllLockers().isEmpty()) {
+			for (Location loc : kettle.sql.getAllLockers()) {
+				lockers.add(new Locker(kettle, loc));
+			}
+		}
 	}
 
-
-
-	public ConfigFile getConfigFile() {
-		return configFile;
+	public Locker getLocker(Location loc) {
+		if (lockers.size() != 0) {
+			for (Locker locker : lockers) {
+				if (locker.getLocation() == loc) {
+					return locker;
+				}
+			}
+		}
+		return null;
 	}
 
-	public void copyStats(Location loc1, Location loc2) {
-		getDataFile().set(locationToString(loc2), getDataFile().getString(locationToString(loc1)));
+	public void removeLocker(Location loc) {
+		Locker locker;
+		if ((locker = getLocker(loc)) != null) {
+			locker.delete();
+		}
+	}
+
+	public void createLocker(Location loc, Player owner) {
+		if (!lockerExists(loc)) {
+			kettle.sql.addLocker(loc, owner.getUniqueId());
+			lockers.add(new Locker(kettle, loc));
+		}
+	}
+
+	public boolean lockerExists(Location loc) {
+		if (getLocker(loc) != null) {
+			return true;
+		}
+		return false;
 	}
 }

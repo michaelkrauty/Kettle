@@ -1,11 +1,17 @@
 package me.michaelkrauty.Kettle.listener;
 
 import me.michaelkrauty.Kettle.Kettle;
+import me.michaelkrauty.Kettle.Objects.Locker;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 
@@ -57,5 +63,57 @@ public class PlayerListener implements Listener {
 		if (kettle.dataFile.getLocation("spawn") != null) {
 			event.setRespawnLocation(kettle.dataFile.getLocation("spawn"));
 		}
+	}
+
+	@EventHandler
+	public void onPlayerInteract(PlayerInteractEvent event) {
+		System.out.println("click");
+		Block clickedBlock = event.getClickedBlock();
+		try {
+			if (clickedBlock.getType() == Material.CHEST) {
+				System.out.println("chest");
+				if (isProtected(clickedBlock.getLocation())) {
+					System.out.println("is protected");
+					if (!playerHasAccess(event.getPlayer(), clickedBlock.getLocation())) {
+						System.out.println("has access");
+						event.getPlayer().sendMessage(ChatColor.GRAY + "This chest is owned by " + kettle.getServer().getOfflinePlayer(kettle.getLocker(clickedBlock.getLocation()).getOwner()));
+						event.setCancelled(true);
+						return;
+					}
+					System.out.println("does not have access");
+					return;
+				}
+				System.out.println("is not protected");
+				return;
+			}
+			System.out.println("is not chest");
+			// TODO: remove locker if chest is no longer present
+			/*
+			if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+				Block block = event.getClickedBlock().getRelative(event.getBlockFace());
+				if (block.getType() == Material.AIR) {
+					if (kettle.lockerExists(block.getLocation())) {
+						kettle.removeLocker(block.getLocation());
+					}
+				}
+			}
+			*/
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private boolean isProtected(Location loc) {
+		return kettle.lockerExists(loc);
+	}
+
+	private boolean playerHasAccess(Player player, Location loc) {
+		Locker locker;
+		if ((locker = kettle.getLocker(loc)) != null) {
+			if (locker.getUsers().contains(player.getUniqueId()))
+				return true;
+		}
+		System.out.println("null");
+		return false;
 	}
 }

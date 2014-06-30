@@ -5,6 +5,7 @@ import org.bukkit.Location;
 
 import java.net.InetSocketAddress;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -54,7 +55,7 @@ public class SQL {
 		try {
 			PreparedStatement stmt = connection.prepareStatement("CREATE TABLE IF NOT EXISTS `users` (uuid varchar(256) PRIMARY KEY, username varchar(256), admin tinyint, ip varchar(256), firstlogin long, lastlogin long);");
 			stmt.execute();
-			stmt = connection.prepareStatement("CREATE TABLE IF NOT EXISTS `lockers` (location varchar(256) PRIMARY KEY, owner varchar(256), users varchar(256), expiry long);");
+			stmt = connection.prepareStatement("CREATE TABLE IF NOT EXISTS `lockers` (location varchar(256) PRIMARY KEY, owner varchar(256), users varchar(256), lastinteract long);");
 			stmt.execute();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -110,14 +111,14 @@ public class SQL {
 		}
 	}
 
-	public synchronized void addLocker(Location location, String owner, long expiry) {
+	public synchronized void addLocker(Location location, UUID owner) {
 		try {
 			if (!lockerExists(location)) {
-				PreparedStatement sql = connection.prepareStatement("INSERT INTO `lockers`(`location`, `owner`, `users`, `expiry`) VALUES (?,?,?,?)");
+				PreparedStatement sql = connection.prepareStatement("INSERT INTO `lockers`(`location`, `owner`, `users`, `lastinteract`) VALUES (?,?,?,?)");
 				sql.setString(1, kettle.locationToString(location));
-				sql.setString(2, owner);
-				sql.setString(3, owner);
-				sql.setLong(4, expiry);
+				sql.setString(2, owner.toString());
+				sql.setString(3, owner.toString());
+				sql.setLong(4, System.currentTimeMillis());
 				sql.executeUpdate();
 			}
 		} catch (Exception e) {
@@ -157,11 +158,43 @@ public class SQL {
 				ResultSet res = sql.executeQuery();
 				res.next();
 				HashMap ret = new HashMap();
-				ret.put("owner", res.getString("owner"));
+				ret.put("owner", UUID.fromString(res.getString("owner")));
 				ret.put("users", res.getString("users"));
-				ret.put("expiry", res.getLong("expiry"));
+				ret.put("lastinteract", Long.toString(res.getLong("lastinteract")));
 				return ret;
 			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public synchronized void updateLocker(Location location, UUID owner, ArrayList<UUID> users, long expiry) {
+		try {
+			PreparedStatement sql = connection.prepareStatement("UPDATE `lockers` SET `owner`=?, `users`=?, `expiry`=? WHERE `location`=?;");
+			sql.setString(1, owner.toString());
+			String usersString = "";
+			for (UUID user : users) {
+				usersString = usersString + user + ",";
+			}
+
+			sql.setLong(3, expiry);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public synchronized ArrayList<Location> getAllLockers() {
+		try {
+			PreparedStatement sql = connection.prepareStatement("SELECT * FROM `lockers`;");
+			ResultSet res = sql.executeQuery();
+			ArrayList<Location> locked = new ArrayList<Location>();
+			for (int i = 0; i < res.getFetchSize(); i++) {
+				String[] locString = res.getString(i).split(",");
+				locked.add(new Location(kettle.getServer().getWorld(locString[0]), Integer.parseInt(locString[1]), Integer.parseInt(locString[2]), Integer.parseInt(locString[3])));
+				res.next();
+			}
+			return locked;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -187,6 +220,22 @@ public class SQL {
 			if (lockerExists(location)) {
 				PreparedStatement sql = connection.prepareStatement("UPDATE `lockers` SET `users`=?, WHERE `location`=?");
 				sql.setString(1, users);
+				sql.setString(2, kettle.locationToString(location));
+				sql.executeUpdate();
+				return true;
+			}
+			return false;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	public synchronized boolean updateLockerExpiry(Location location, long expiry) {
+		try {
+			if (lockerExists(location)) {
+				PreparedStatement sql = connection.prepareStatement("UPDATE `lockers` SET `expiry`=?, WHERE `location`=?");
+				sql.setLong(1, expiry);
 				sql.setString(2, kettle.locationToString(location));
 				sql.executeUpdate();
 				return true;
