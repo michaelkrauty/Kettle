@@ -32,7 +32,6 @@ public class EditUsersCommand {
 			return;
 		}
 		if (args.length < 3) {
-			player.sendMessage(ChatColor.GRAY + "Expires in: " + locker.getExpiry() + " minutes.");
 			player.sendMessage(ChatColor.GRAY + "Users: " + locker.getUserNames());
 			player.sendMessage(ChatColor.GRAY + "Add/Remove players with " + ChatColor.RED + "/locker users " + ChatColor.GRAY + "<" + ChatColor.GREEN + "add" + ChatColor.GRAY + "/" + ChatColor.GREEN + "remove" + ChatColor.GRAY + "> <" + ChatColor.GREEN + "user" + ChatColor.GRAY + ">" + ChatColor.GRAY + ".");
 			return;
