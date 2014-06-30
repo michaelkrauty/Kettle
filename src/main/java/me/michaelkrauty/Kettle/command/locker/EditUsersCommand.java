@@ -17,6 +17,9 @@ import org.bukkit.entity.Player;
 public class EditUsersCommand {
 
 	public EditUsersCommand(CommandSender sender, String[] args, Kettle kettle) {
+		for (int i = 0; i < kettle.lockers.size(); i++ ) {
+			System.out.println(kettle.lockers.get(i).getLocation().toString());
+		}
 		Player player = (Player) sender;
 		if (player.getTargetBlock(null, 10).getType() != Material.CHEST) {
 			player.sendMessage(ChatColor.GRAY + "Make sure you're looking at a " + ChatColor.GREEN + "chest" + ChatColor.GRAY + " within " + ChatColor.GREEN + "10 blocks" + ChatColor.GRAY + " of you");
