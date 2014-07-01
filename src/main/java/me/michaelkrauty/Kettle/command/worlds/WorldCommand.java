@@ -99,7 +99,6 @@ public class WorldCommand extends AbstractCommand {
 		if (file.isDirectory()) {
 			for (File f : file.listFiles()) {
 				recursiveDelete(f);
-				System.out.println("Deleting: " + f.getPath());
 			}
 		}
 		file.delete();

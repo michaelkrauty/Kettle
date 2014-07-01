@@ -29,12 +29,9 @@ public class SQL {
 	public synchronized boolean openConnection() {
 		try {
 			connection = DriverManager.getConnection("jdbc:mysql://192.187.118.202:3306/KettleTest", kettle.configFile.getString("db_user"), kettle.configFile.getString("db_pass"));
-			if (connection == null) {
-				System.out.println("KETTLE COULD NOT CONNECT TO SQL DATABSE! SHUTTING DOWN.");
-				kettle.getServer().shutdown();
-			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			System.out.println("COULD NOT CONNECT TO SQL DATABASE, SHUTTING DOWN");
+			kettle.getServer().shutdown();
 			return false;
 		}
 		return true;
@@ -196,15 +193,12 @@ public class SQL {
 			ArrayList<Location> locked = new ArrayList<Location>();
 			while (!res.isLast()) {
 				res.next();
-				System.out.println("SQL: " + res.getString("location"));
 				String[] locString = res.getString("location").split(",");
 				locked.add(new Location(kettle.getServer().getWorld(locString[0]), Integer.parseInt(locString[1]), Integer.parseInt(locString[2]), Integer.parseInt(locString[3])));
 			}
 			res.close();
 			return locked;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		} catch (Exception ignored) {}
 		return null;
 	}
 

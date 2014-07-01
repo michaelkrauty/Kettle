@@ -17,9 +17,6 @@ import org.bukkit.entity.Player;
 public class EditUsersCommand {
 
 	public EditUsersCommand(CommandSender sender, String[] args, Kettle kettle) {
-		for (int i = 0; i < kettle.lockers.size(); i++ ) {
-			System.out.println(kettle.lockers.get(i).getLocation().toString());
-		}
 		Player player = (Player) sender;
 		if (player.getTargetBlock(null, 10).getType() != Material.CHEST) {
 			player.sendMessage(ChatColor.GRAY + "Make sure you're looking at a " + ChatColor.GREEN + "chest" + ChatColor.GRAY + " within " + ChatColor.GREEN + "10 blocks" + ChatColor.GRAY + " of you");
@@ -36,9 +33,6 @@ public class EditUsersCommand {
 			player.sendMessage(ChatColor.GRAY + "Add/Remove players with " + ChatColor.RED + "/locker users " + ChatColor.GRAY + "<" + ChatColor.GREEN + "add" + ChatColor.GRAY + "/" + ChatColor.GREEN + "remove" + ChatColor.GRAY + "> <" + ChatColor.GREEN + "user" + ChatColor.GRAY + ">" + ChatColor.GRAY + ".");
 			return;
 		}
-		System.out.println("required: " + locker.getOwner().toString());
-		System.out.println("supplied: " + player.getUniqueId().toString());
-		//if (!locker.getOwner().equals(player.getUniqueId())) {
 		if (!locker.userIsOwner(player.getUniqueId())) {
 			player.sendMessage(ChatColor.GRAY + "You don't own that locker!");
 			return;

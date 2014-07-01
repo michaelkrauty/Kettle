@@ -24,6 +24,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.UUID;
 import java.util.logging.Logger;
 
 /**
@@ -164,8 +165,9 @@ public class Kettle extends JavaPlugin {
 	}
 
 	public void loadLockers() {
-		if (!kettle.sql.getAllLockers().isEmpty()) {
-			for (Location loc : kettle.sql.getAllLockers()) {
+		ArrayList<Location> lock;
+		if ((lock = kettle.sql.getAllLockers()) != null) {
+			for (Location loc : lock) {
 				lockers.add(new Locker(kettle, loc));
 			}
 		}
@@ -191,10 +193,19 @@ public class Kettle extends JavaPlugin {
 		}
 	}
 
-	public boolean lockerExists(Location loc) {
-		if (getLocker(loc) != null) {
-			return true;
+	public void createLocker(Location loc, UUID owner) {
+		if (!lockerExists(loc)) {
+			kettle.sql.addLocker(loc, owner);
+			Locker locker = new Locker(kettle, loc);
+			lockers.add(locker);
 		}
-		return false;
+	}
+
+	public boolean lockerExists(Location loc) {
+		return getLocker(loc) != null;
+	}
+
+	public void copyLocker(Location loc1, Location loc2) {
+		createLocker(loc2, getLocker(loc1).getOwner());
 	}
 }

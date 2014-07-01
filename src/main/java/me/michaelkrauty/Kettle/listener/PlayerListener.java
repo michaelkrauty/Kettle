@@ -6,6 +6,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -81,17 +82,23 @@ public class PlayerListener implements Listener {
 				}
 				return;
 			}
-			// TODO: remove locker if chest is no longer present
-			/*
-			if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-				Block block = event.getClickedBlock().getRelative(event.getBlockFace());
-				if (block.getType() == Material.AIR) {
-					if (kettle.lockerExists(block.getLocation())) {
-						kettle.removeLocker(block.getLocation());
-					}
+				Block block = event.getClickedBlock();
+				if (kettle.getLocker(block.getRelative(BlockFace.EAST).getLocation()) != null) {
+					kettle.copyLocker(event.getClickedBlock().getRelative(BlockFace.EAST).getLocation(), event.getClickedBlock().getLocation());
+					return;
 				}
-			}
-			*/
+				if (kettle.getLocker(block.getRelative(BlockFace.WEST).getLocation()) != null) {
+					kettle.copyLocker(event.getClickedBlock().getRelative(BlockFace.WEST).getLocation(), event.getClickedBlock().getLocation());
+					return;
+				}
+				if (kettle.getLocker(block.getRelative(BlockFace.NORTH).getLocation()) != null) {
+					kettle.copyLocker(event.getClickedBlock().getRelative(BlockFace.NORTH).getLocation(), event.getClickedBlock().getLocation());
+					return;
+				}
+				if (kettle.getLocker(block.getRelative(BlockFace.SOUTH).getLocation()) != null) {
+					kettle.copyLocker(event.getClickedBlock().getRelative(BlockFace.SOUTH).getLocation(), event.getClickedBlock().getLocation());
+					return;
+				}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
