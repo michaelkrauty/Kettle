@@ -10,7 +10,6 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -82,23 +81,23 @@ public class PlayerListener implements Listener {
 				}
 				return;
 			}
-				Block block = event.getClickedBlock();
-				if (kettle.getLocker(block.getRelative(BlockFace.EAST).getLocation()) != null) {
-					kettle.copyLocker(event.getClickedBlock().getRelative(BlockFace.EAST).getLocation(), event.getClickedBlock().getLocation());
-					return;
-				}
-				if (kettle.getLocker(block.getRelative(BlockFace.WEST).getLocation()) != null) {
-					kettle.copyLocker(event.getClickedBlock().getRelative(BlockFace.WEST).getLocation(), event.getClickedBlock().getLocation());
-					return;
-				}
-				if (kettle.getLocker(block.getRelative(BlockFace.NORTH).getLocation()) != null) {
-					kettle.copyLocker(event.getClickedBlock().getRelative(BlockFace.NORTH).getLocation(), event.getClickedBlock().getLocation());
-					return;
-				}
-				if (kettle.getLocker(block.getRelative(BlockFace.SOUTH).getLocation()) != null) {
-					kettle.copyLocker(event.getClickedBlock().getRelative(BlockFace.SOUTH).getLocation(), event.getClickedBlock().getLocation());
-					return;
-				}
+			Block block = event.getClickedBlock();
+			if (kettle.getLocker(block.getRelative(BlockFace.EAST).getLocation()) != null) {
+				kettle.copyLocker(event.getClickedBlock().getRelative(BlockFace.EAST).getLocation(), event.getClickedBlock().getLocation());
+				return;
+			}
+			if (kettle.getLocker(block.getRelative(BlockFace.WEST).getLocation()) != null) {
+				kettle.copyLocker(event.getClickedBlock().getRelative(BlockFace.WEST).getLocation(), event.getClickedBlock().getLocation());
+				return;
+			}
+			if (kettle.getLocker(block.getRelative(BlockFace.NORTH).getLocation()) != null) {
+				kettle.copyLocker(event.getClickedBlock().getRelative(BlockFace.NORTH).getLocation(), event.getClickedBlock().getLocation());
+				return;
+			}
+			if (kettle.getLocker(block.getRelative(BlockFace.SOUTH).getLocation()) != null) {
+				kettle.copyLocker(event.getClickedBlock().getRelative(BlockFace.SOUTH).getLocation(), event.getClickedBlock().getLocation());
+				return;
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

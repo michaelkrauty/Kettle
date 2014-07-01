@@ -76,9 +76,11 @@ public class Kettle extends JavaPlugin {
 	}
 
 	public void onDisable() {
-		for (Locker locker : lockers) {
-			locker.unload();
-		}
+		try {
+			for (Locker locker : lockers) {
+				locker.unload();
+			}
+		} catch (Exception ignored){}
 		kettle.sql.closeConnection();
 		PluginDescriptionFile pdfFile = this.getDescription();
 		log.info(pdfFile.getName() + " version " + pdfFile.getVersion() + " disabled!");
@@ -186,18 +188,20 @@ public class Kettle extends JavaPlugin {
 	}
 
 	public void createLocker(Location loc, Player owner) {
-		if (!lockerExists(loc)) {
-			kettle.sql.addLocker(loc, owner.getUniqueId());
-			Locker locker = new Locker(kettle, loc);
-			lockers.add(locker);
-		}
+		createLocker(loc, owner.getUniqueId());
 	}
 
 	public void createLocker(Location loc, UUID owner) {
 		if (!lockerExists(loc)) {
-			kettle.sql.addLocker(loc, owner);
-			Locker locker = new Locker(kettle, loc);
-			lockers.add(locker);
+			final Location loc1 = loc;
+			final UUID owner1 = owner;
+			getServer().getScheduler().scheduleAsyncDelayedTask(this, new Runnable() {
+				@Override
+				public void run() {
+					kettle.sql.addLocker(loc1, owner1);
+					lockers.add(new Locker(kettle, loc1));
+				}
+			});
 		}
 	}
 
