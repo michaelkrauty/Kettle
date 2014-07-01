@@ -3,6 +3,7 @@ package me.michaelkrauty.Kettle.util;
 import me.michaelkrauty.Kettle.Kettle;
 import me.michaelkrauty.Kettle.Objects.Locker;
 import org.bukkit.Location;
+import org.bukkit.Material;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,9 +22,9 @@ public class Schedule {
 		kettle.getServer().getScheduler().scheduleSyncRepeatingTask(kettle, new Runnable() {
 			@Override
 			public void run() {
-				//
+				checkChests();
 			}
-		}, 0, /*1200*/20);
+		}, 0, 1);
 	}
 
 	/*public void checkExpiry() {
@@ -40,4 +41,12 @@ public class Schedule {
 			}
 		}
 	}*/
+
+	public void checkChests() {
+		for (Locker locker : kettle.lockers) {
+			if (locker.getLocation().getWorld().getBlockAt(locker.getLocation()).getType() != Material.CHEST) {
+				locker.delete();
+			}
+		}
+	}
 }

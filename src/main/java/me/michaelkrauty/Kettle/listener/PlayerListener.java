@@ -40,7 +40,7 @@ public class PlayerListener implements Listener {
 		kettle.sql.updateUsername(uuid);
 		kettle.sql.updateIP(uuid, player.getAddress());
 		kettle.sql.updateLastLogin(uuid);
-		kettle.getServer().getScheduler().scheduleSyncDelayedTask(kettle, new Runnable() {
+		kettle.getServer().getScheduler().scheduleAsyncDelayedTask(kettle, new Runnable() {
 			@Override
 			public void run() {
 				for (String line : kettle.motdFile.getMOTD()) {
