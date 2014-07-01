@@ -5,11 +5,13 @@ import me.michaelkrauty.Kettle.Objects.Locker;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -81,21 +83,39 @@ public class PlayerListener implements Listener {
 				}
 				return;
 			}
-			Block block = event.getClickedBlock();
-			if (kettle.getLocker(block.getRelative(BlockFace.EAST).getLocation()) != null) {
-				kettle.copyLocker(event.getClickedBlock().getRelative(BlockFace.EAST).getLocation(), event.getClickedBlock().getLocation());
+			if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+				System.out.println("ModX: " + event.getBlockFace().getModX());
+				System.out.println("ModY: " + event.getBlockFace().getModY());
+				System.out.println("ModZ: " + event.getBlockFace().getModZ());
+			}
+			Block block = event.getClickedBlock().getWorld().getBlockAt(event.getClickedBlock().getX() + event.getBlockFace().getModX(), event.getClickedBlock().getY() + event.getBlockFace().getModY(), event.getClickedBlock().getZ() + event.getBlockFace().getModZ());
+			Location blockLocation = block.getLocation();
+			World w = blockLocation.getWorld();
+			int x = blockLocation.getBlockX();
+			int y = blockLocation.getBlockY();
+			int z = blockLocation.getBlockZ();
+			if (w.getBlockAt(x + 1, y, z).getType() == Material.CHEST) {
+				Location loc = new Location(w, x + 1, y, z);
+				if (kettle.getLocker(loc) != null)
+				kettle.copyLocker(loc, blockLocation);
 				return;
 			}
-			if (kettle.getLocker(block.getRelative(BlockFace.WEST).getLocation()) != null) {
-				kettle.copyLocker(event.getClickedBlock().getRelative(BlockFace.WEST).getLocation(), event.getClickedBlock().getLocation());
+			if (w.getBlockAt(x - 1, y, z).getType() == Material.CHEST) {
+				Location loc = new Location(w, x - 1, y, z);
+				if (kettle.getLocker(loc) != null)
+				kettle.copyLocker(loc, blockLocation);
 				return;
 			}
-			if (kettle.getLocker(block.getRelative(BlockFace.NORTH).getLocation()) != null) {
-				kettle.copyLocker(event.getClickedBlock().getRelative(BlockFace.NORTH).getLocation(), event.getClickedBlock().getLocation());
+			if (w.getBlockAt(x, y, z + 1).getType() == Material.CHEST) {
+				Location loc = new Location(w, x, y, z + 1);
+				if (kettle.getLocker(loc) != null)
+				kettle.copyLocker(loc, blockLocation);
 				return;
 			}
-			if (kettle.getLocker(block.getRelative(BlockFace.SOUTH).getLocation()) != null) {
-				kettle.copyLocker(event.getClickedBlock().getRelative(BlockFace.SOUTH).getLocation(), event.getClickedBlock().getLocation());
+			if (w.getBlockAt(x, y, z - 1).getType() == Material.CHEST) {
+				Location loc = new Location(w, x, y, z - 1);
+				if (kettle.getLocker(loc) != null)
+				kettle.copyLocker(loc, blockLocation);
 				return;
 			}
 		} catch (Exception e) {

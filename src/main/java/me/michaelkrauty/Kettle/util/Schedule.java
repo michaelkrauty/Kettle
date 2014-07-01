@@ -2,11 +2,7 @@ package me.michaelkrauty.Kettle.util;
 
 import me.michaelkrauty.Kettle.Kettle;
 import me.michaelkrauty.Kettle.Objects.Locker;
-import org.bukkit.Location;
 import org.bukkit.Material;
-
-import java.util.ArrayList;
-import java.util.HashMap;
 
 /**
  * Created on 6/29/2014.
@@ -43,10 +39,13 @@ public class Schedule {
 	}*/
 
 	public void checkChests() {
-		for (Locker locker : kettle.lockers) {
-			if (locker.getLocation().getWorld().getBlockAt(locker.getLocation()).getType() != Material.CHEST) {
-				locker.delete();
+		try {
+			for (Locker locker : kettle.lockers) {
+				if (locker.getLocation().getWorld().getBlockAt(locker.getLocation()).getType() != Material.CHEST) {
+					locker.delete();
+				}
 			}
+		} catch (Exception ignored) {
 		}
 	}
 }
