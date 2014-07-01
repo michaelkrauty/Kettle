@@ -30,11 +30,6 @@ public class Locker {
 			users.add(UUID.fromString(str));
 		}
 		lastInteract = Long.parseLong((String) info.get("lastinteract"));
-		System.out.println("locker object created");
-		System.out.println(location.toString());
-		System.out.println(owner.toString());
-		System.out.println(users.toString());
-		System.out.println(lastInteract);
 	}
 
 	public void saveInfo() {
@@ -77,11 +72,11 @@ public class Locker {
 	}
 
 	public boolean userHasAccess(UUID user) {
-		for (UUID usr : users) {
-			if (usr == user)
-				return true;
-		}
-		return false;
+		return users.contains(user);
+	}
+
+	public boolean userIsOwner(UUID user) {
+		return owner.equals(user);
 	}
 
 	public void setLocation(Location location) {

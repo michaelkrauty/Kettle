@@ -26,8 +26,8 @@ public class EditUsersCommand {
 			return;
 		}
 		Location targetBlockLocation = player.getTargetBlock(null, 10).getLocation();
-		Locker locker;
-		if ((locker = kettle.getLocker(targetBlockLocation)) == null) {
+		Locker locker = kettle.getLocker(targetBlockLocation);
+		if (locker == null) {
 			player.sendMessage(ChatColor.GRAY + "That chest isn't locked.");
 			return;
 		}
@@ -36,7 +36,10 @@ public class EditUsersCommand {
 			player.sendMessage(ChatColor.GRAY + "Add/Remove players with " + ChatColor.RED + "/locker users " + ChatColor.GRAY + "<" + ChatColor.GREEN + "add" + ChatColor.GRAY + "/" + ChatColor.GREEN + "remove" + ChatColor.GRAY + "> <" + ChatColor.GREEN + "user" + ChatColor.GRAY + ">" + ChatColor.GRAY + ".");
 			return;
 		}
-		if (locker.getOwner() != player.getUniqueId()) {
+		System.out.println("required: " + locker.getOwner().toString());
+		System.out.println("supplied: " + player.getUniqueId().toString());
+		//if (!locker.getOwner().equals(player.getUniqueId())) {
+		if (!locker.userIsOwner(player.getUniqueId())) {
 			player.sendMessage(ChatColor.GRAY + "You don't own that locker!");
 			return;
 		}

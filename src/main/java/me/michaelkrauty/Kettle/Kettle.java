@@ -5,7 +5,6 @@ import me.michaelkrauty.Kettle.command.essential.*;
 import me.michaelkrauty.Kettle.command.factions.FactionsCommand;
 import me.michaelkrauty.Kettle.command.kettle.KettleCommand;
 import me.michaelkrauty.Kettle.command.kettle.TestCommand;
-import me.michaelkrauty.Kettle.command.locker.CreateCommand;
 import me.michaelkrauty.Kettle.command.locker.LockerCommand;
 import me.michaelkrauty.Kettle.command.worlds.WorldCommand;
 import me.michaelkrauty.Kettle.file.ConfigFile;
@@ -76,10 +75,8 @@ public class Kettle extends JavaPlugin {
 	}
 
 	public void onDisable() {
-		if (lockers.size() != 0) {
-			for (Locker locker : lockers) {
-				locker.unload();
-			}
+		for (Locker locker : lockers) {
+			locker.unload();
 		}
 		kettle.sql.closeConnection();
 		PluginDescriptionFile pdfFile = this.getDescription();
@@ -176,26 +173,21 @@ public class Kettle extends JavaPlugin {
 
 	public Locker getLocker(Location loc) {
 		if (lockers.size() != 0) {
-			for (Locker locker : lockers) {
-				if (locker.getLocation() == loc) {
-					return locker;
+			for (int i = 0; i < lockers.size(); i++) {
+				if (locationToString(lockers.get(i).getLocation()).equals(locationToString(loc))) {
+					return lockers.get(i);
 				}
 			}
+			return null;
 		}
 		return null;
-	}
-
-	public void removeLocker(Location loc) {
-		Locker locker;
-		if ((locker = getLocker(loc)) != null) {
-			locker.delete();
-		}
 	}
 
 	public void createLocker(Location loc, Player owner) {
 		if (!lockerExists(loc)) {
 			kettle.sql.addLocker(loc, owner.getUniqueId());
-			lockers.add(new Locker(kettle, loc));
+			Locker locker = new Locker(kettle, loc);
+			lockers.add(locker);
 		}
 	}
 

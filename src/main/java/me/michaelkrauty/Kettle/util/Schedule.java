@@ -1,6 +1,7 @@
 package me.michaelkrauty.Kettle.util;
 
 import me.michaelkrauty.Kettle.Kettle;
+import me.michaelkrauty.Kettle.Objects.Locker;
 import org.bukkit.Location;
 
 import java.util.ArrayList;
@@ -17,12 +18,12 @@ public class Schedule {
 
 	public Schedule(Kettle instance) {
 		kettle = instance;
-	/*	kettle.getServer().getScheduler().scheduleSyncRepeatingTask(kettle, new Runnable() {
+		kettle.getServer().getScheduler().scheduleSyncRepeatingTask(kettle, new Runnable() {
 			@Override
 			public void run() {
-				checkExpiry();
+				//
 			}
-		}, 0, 1200);*/
+		}, 0, /*1200*/20);
 	}
 
 	/*public void checkExpiry() {

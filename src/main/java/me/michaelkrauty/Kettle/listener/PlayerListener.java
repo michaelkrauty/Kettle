@@ -67,26 +67,20 @@ public class PlayerListener implements Listener {
 
 	@EventHandler
 	public void onPlayerInteract(PlayerInteractEvent event) {
-		System.out.println("click");
 		Block clickedBlock = event.getClickedBlock();
 		try {
 			if (clickedBlock.getType() == Material.CHEST) {
-				System.out.println("chest");
 				if (isProtected(clickedBlock.getLocation())) {
-					System.out.println("is protected");
-					if (!playerHasAccess(event.getPlayer(), clickedBlock.getLocation())) {
-						System.out.println("has access");
-						event.getPlayer().sendMessage(ChatColor.GRAY + "This chest is owned by " + kettle.getServer().getOfflinePlayer(kettle.getLocker(clickedBlock.getLocation()).getOwner()));
+					Locker locker = kettle.getLocker(clickedBlock.getLocation());
+					if (!locker.userHasAccess(event.getPlayer().getUniqueId())) {
+						event.getPlayer().sendMessage(ChatColor.GRAY + "This chest is owned by " + kettle.getServer().getOfflinePlayer(kettle.getLocker(clickedBlock.getLocation()).getOwner()).getName());
 						event.setCancelled(true);
 						return;
 					}
-					System.out.println("does not have access");
 					return;
 				}
-				System.out.println("is not protected");
 				return;
 			}
-			System.out.println("is not chest");
 			// TODO: remove locker if chest is no longer present
 			/*
 			if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
@@ -105,15 +99,5 @@ public class PlayerListener implements Listener {
 
 	private boolean isProtected(Location loc) {
 		return kettle.lockerExists(loc);
-	}
-
-	private boolean playerHasAccess(Player player, Location loc) {
-		Locker locker;
-		if ((locker = kettle.getLocker(loc)) != null) {
-			if (locker.getUsers().contains(player.getUniqueId()))
-				return true;
-		}
-		System.out.println("null");
-		return false;
 	}
 }

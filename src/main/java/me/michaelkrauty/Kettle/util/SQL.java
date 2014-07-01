@@ -169,16 +169,21 @@ public class SQL {
 		return null;
 	}
 
-	public synchronized void updateLocker(Location location, UUID owner, ArrayList<UUID> users, long expiry) {
+	public synchronized void updateLocker(Location location, UUID owner, ArrayList<UUID> users, long lastInteract) {
 		try {
-			PreparedStatement sql = connection.prepareStatement("UPDATE `lockers` SET `owner`=?, `users`=?, `expiry`=? WHERE `location`=?;");
+			PreparedStatement sql = connection.prepareStatement("UPDATE `lockers` SET `owner`=?, `users`=?, `lastinteract`=? WHERE `location`=?;");
 			sql.setString(1, owner.toString());
-			String usersString = "";
-			for (UUID user : users) {
-				usersString = usersString + user + ",";
+			String userString = "";
+			for (int i = 0; i < users.size(); i++) {
+				if (i == 0)
+					userString = users.get(i).toString();
+				else
+					userString = userString + "," + users.get(i).toString();
 			}
-
-			sql.setLong(3, expiry);
+			sql.setString(2, userString);
+			sql.setLong(3, lastInteract);
+			sql.setString(4, kettle.locationToString(location));
+			sql.executeUpdate();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -189,11 +194,13 @@ public class SQL {
 			PreparedStatement sql = connection.prepareStatement("SELECT * FROM `lockers`;");
 			ResultSet res = sql.executeQuery();
 			ArrayList<Location> locked = new ArrayList<Location>();
-			for (int i = 0; i < res.getFetchSize(); i++) {
-				String[] locString = res.getString(i).split(",");
-				locked.add(new Location(kettle.getServer().getWorld(locString[0]), Integer.parseInt(locString[1]), Integer.parseInt(locString[2]), Integer.parseInt(locString[3])));
+			while (!res.isLast()) {
 				res.next();
+				System.out.println("SQL: " + res.getString("location"));
+				String[] locString = res.getString("location").split(",");
+				locked.add(new Location(kettle.getServer().getWorld(locString[0]), Integer.parseInt(locString[1]), Integer.parseInt(locString[2]), Integer.parseInt(locString[3])));
 			}
+			res.close();
 			return locked;
 		} catch (Exception e) {
 			e.printStackTrace();
