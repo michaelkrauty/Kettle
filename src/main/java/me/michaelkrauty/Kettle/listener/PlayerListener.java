@@ -7,7 +7,6 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -84,39 +83,36 @@ public class PlayerListener implements Listener {
 				return;
 			}
 			if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-				System.out.println("ModX: " + event.getBlockFace().getModX());
-				System.out.println("ModY: " + event.getBlockFace().getModY());
-				System.out.println("ModZ: " + event.getBlockFace().getModZ());
-			}
-			Block block = event.getClickedBlock().getWorld().getBlockAt(event.getClickedBlock().getX() + event.getBlockFace().getModX(), event.getClickedBlock().getY() + event.getBlockFace().getModY(), event.getClickedBlock().getZ() + event.getBlockFace().getModZ());
-			Location blockLocation = block.getLocation();
-			World w = blockLocation.getWorld();
-			int x = blockLocation.getBlockX();
-			int y = blockLocation.getBlockY();
-			int z = blockLocation.getBlockZ();
-			if (w.getBlockAt(x + 1, y, z).getType() == Material.CHEST) {
-				Location loc = new Location(w, x + 1, y, z);
-				if (kettle.getLocker(loc) != null)
-				kettle.copyLocker(loc, blockLocation);
-				return;
-			}
-			if (w.getBlockAt(x - 1, y, z).getType() == Material.CHEST) {
-				Location loc = new Location(w, x - 1, y, z);
-				if (kettle.getLocker(loc) != null)
-				kettle.copyLocker(loc, blockLocation);
-				return;
-			}
-			if (w.getBlockAt(x, y, z + 1).getType() == Material.CHEST) {
-				Location loc = new Location(w, x, y, z + 1);
-				if (kettle.getLocker(loc) != null)
-				kettle.copyLocker(loc, blockLocation);
-				return;
-			}
-			if (w.getBlockAt(x, y, z - 1).getType() == Material.CHEST) {
-				Location loc = new Location(w, x, y, z - 1);
-				if (kettle.getLocker(loc) != null)
-				kettle.copyLocker(loc, blockLocation);
-				return;
+				Block block = event.getClickedBlock().getWorld().getBlockAt(event.getClickedBlock().getX() + event.getBlockFace().getModX(), event.getClickedBlock().getY() + event.getBlockFace().getModY(), event.getClickedBlock().getZ() + event.getBlockFace().getModZ());
+				Location blockLocation = block.getLocation();
+				World w = blockLocation.getWorld();
+				int x = blockLocation.getBlockX();
+				int y = blockLocation.getBlockY();
+				int z = blockLocation.getBlockZ();
+				if (w.getBlockAt(x + 1, y, z).getType() == Material.CHEST) {
+					Location loc = new Location(w, x + 1, y, z);
+					if (kettle.getLocker(loc) != null)
+						kettle.copyLocker(loc, blockLocation);
+					return;
+				}
+				if (w.getBlockAt(x - 1, y, z).getType() == Material.CHEST) {
+					Location loc = new Location(w, x - 1, y, z);
+					if (kettle.getLocker(loc) != null)
+						kettle.copyLocker(loc, blockLocation);
+					return;
+				}
+				if (w.getBlockAt(x, y, z + 1).getType() == Material.CHEST) {
+					Location loc = new Location(w, x, y, z + 1);
+					if (kettle.getLocker(loc) != null)
+						kettle.copyLocker(loc, blockLocation);
+					return;
+				}
+				if (w.getBlockAt(x, y, z - 1).getType() == Material.CHEST) {
+					Location loc = new Location(w, x, y, z - 1);
+					if (kettle.getLocker(loc) != null)
+						kettle.copyLocker(loc, blockLocation);
+					return;
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
