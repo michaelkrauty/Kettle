@@ -18,6 +18,8 @@ import me.michaelkrauty.Kettle.util.Error;
 import me.michaelkrauty.Kettle.util.SQL;
 import me.michaelkrauty.Kettle.util.Schedule;
 import org.bukkit.Location;
+import org.bukkit.WorldCreator;
+import org.bukkit.WorldType;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
@@ -75,6 +77,7 @@ public class Kettle extends JavaPlugin {
 
 		loadLockers();
 		loadUsers();
+		loadWorlds();
 
 		log.info("Kettle version " + getDescription().getVersion() + " enabled!");
 	}
@@ -238,5 +241,10 @@ public class Kettle extends JavaPlugin {
 			}
 		}
 		return null;
+	}
+
+	private void loadWorlds() {
+		for (String worldName : dataFile.getArrayList("worlds"))
+			new WorldCreator(worldName).createWorld();
 	}
 }
