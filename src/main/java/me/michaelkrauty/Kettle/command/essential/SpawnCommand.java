@@ -22,7 +22,7 @@ public class SpawnCommand extends AbstractCommand {
 
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
 		Player player = (Player) sender;
-		if (kettle.dataFile.getLocation("spawn") != null ) {
+		if (kettle.dataFile.getLocation("spawn") != null) {
 			player.teleport(kettle.dataFile.getLocation("spawn"));
 		} else {
 			player.teleport(kettle.getServer().getWorlds().get(0).getSpawnLocation());

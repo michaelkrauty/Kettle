@@ -4,7 +4,6 @@ import me.michaelkrauty.Kettle.Kettle;
 import me.michaelkrauty.Kettle.util.AbstractCommand;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 /**
  * Created on 6/29/2014.

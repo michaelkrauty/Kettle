@@ -45,8 +45,9 @@ public class User {
 	}
 
 
-
-	/** UTIL */
+	/**
+	 * UTIL
+	 */
 
 	private boolean checkPlayerFile() {
 		boolean exists = !playerFile.exists();
@@ -77,8 +78,9 @@ public class User {
 	}
 
 
-
-	/** GET */
+	/**
+	 * GET
+	 */
 
 	public Player getPlayer() {
 		return this.player;
@@ -101,8 +103,9 @@ public class User {
 	}
 
 
-
-	/** SET */
+	/**
+	 * SET
+	 */
 
 	public void setTeleportEnabled(boolean bool) {
 		this.teleportEnabled = bool;

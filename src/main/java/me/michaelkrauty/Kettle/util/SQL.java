@@ -3,8 +3,10 @@ package me.michaelkrauty.Kettle.util;
 import me.michaelkrauty.Kettle.Kettle;
 import org.bukkit.Location;
 
-import java.net.InetSocketAddress;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
