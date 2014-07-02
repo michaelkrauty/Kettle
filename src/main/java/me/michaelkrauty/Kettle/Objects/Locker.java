@@ -28,7 +28,7 @@ public class Locker {
 		users = new ArrayList<UUID>();
 		for (String str : ((String) info.get("users")).split(",")) {
 			if (!str.equals(""))
-			users.add(UUID.fromString(str));
+				users.add(UUID.fromString(str));
 		}
 		lastInteract = Long.parseLong((String) info.get("lastinteract"));
 	}

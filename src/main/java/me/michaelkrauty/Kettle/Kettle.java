@@ -18,11 +18,14 @@ import me.michaelkrauty.Kettle.util.Error;
 import me.michaelkrauty.Kettle.util.SQL;
 import me.michaelkrauty.Kettle.util.Schedule;
 import org.bukkit.Location;
+import org.bukkit.WorldCreator;
+import org.bukkit.WorldType;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.UUID;
@@ -73,6 +76,8 @@ public class Kettle extends JavaPlugin {
 		schedule = new Schedule(this);
 
 		loadLockers();
+		loadUsers();
+		loadWorlds();
 
 		log.info("Kettle version " + getDescription().getVersion() + " enabled!");
 	}
@@ -82,7 +87,8 @@ public class Kettle extends JavaPlugin {
 			for (Locker locker : lockers) {
 				locker.unload();
 			}
-		} catch (Exception ignored){}
+		} catch (Exception ignored) {
+		}
 		kettle.sql.closeConnection();
 		PluginDescriptionFile pdfFile = this.getDescription();
 		log.info(pdfFile.getName() + " version " + pdfFile.getVersion() + " disabled!");
@@ -118,9 +124,17 @@ public class Kettle extends JavaPlugin {
 	}
 
 	public void checkDirectories() {
-		if (!getDataFolder().exists()) {
+		if (!getDataFolder().exists())
 			getDataFolder().mkdir();
-		}
+		File playerFolder = new File(getDataFolder() + "/players");
+		File factionFolder = new File(getDataFolder() + "/factions");
+		File lockerFolder = new File(getDataFolder() + "/lockers");
+		if (!playerFolder.exists())
+			playerFolder.mkdir();
+		if (!factionFolder.exists())
+			factionFolder.mkdir();
+		if (!lockerFolder.exists())
+			lockerFolder.mkdir();
 	}
 
 	public String locationToString(Location loc) {
@@ -136,10 +150,6 @@ public class Kettle extends JavaPlugin {
 			return dataFile.getLocation("spawn");
 		else
 			return getServer().getWorlds().get(0).getSpawnLocation();
-	}
-
-	public ConfigFile getConfigFile() {
-		return configFile;
 	}
 
 	public static final String format(String str) {
@@ -175,6 +185,13 @@ public class Kettle extends JavaPlugin {
 				lockers.add(new Locker(kettle, loc));
 			}
 		}
+	}
+
+	public void loadUsers() {
+			for (Player player : kettle.getServer().getOnlinePlayers()) {
+				if (kettle.getUser(player) == null)
+					kettle.users.add(new User(kettle, player));
+			}
 	}
 
 	public Locker getLocker(Location loc) {
@@ -224,5 +241,10 @@ public class Kettle extends JavaPlugin {
 			}
 		}
 		return null;
+	}
+
+	private void loadWorlds() {
+		for (String worldName : dataFile.getArrayList("worlds"))
+			new WorldCreator(worldName).createWorld();
 	}
 }

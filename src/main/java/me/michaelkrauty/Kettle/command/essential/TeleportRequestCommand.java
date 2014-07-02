@@ -1,6 +1,7 @@
 package me.michaelkrauty.Kettle.command.essential;
 
 import me.michaelkrauty.Kettle.Kettle;
+import me.michaelkrauty.Kettle.Objects.User;
 import me.michaelkrauty.Kettle.util.AbstractCommand;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -34,7 +35,8 @@ public class TeleportRequestCommand extends AbstractCommand {
 		Player player = (Player) sender;
 		if (kettle.getServer().getPlayer(args[0]) instanceof Player) {
 			Player target = kettle.getServer().getPlayer(args[0]);
-			if ((Boolean) kettle.sql.getUser(target.getUniqueId()).get("teleportenabled")) {
+			User user = kettle.getUser(target);
+			if (user.teleportEnabled()) {
 				// TODO: tpa
 			} else {
 				// target's teleportion is disabled

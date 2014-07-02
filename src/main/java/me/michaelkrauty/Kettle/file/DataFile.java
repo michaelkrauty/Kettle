@@ -5,6 +5,8 @@ import org.bukkit.Location;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created on 6/28/2014.
@@ -62,8 +64,22 @@ public class DataFile {
 		reload();
 	}
 
+	public void set(String path, ArrayList<String> value) {
+		data.set(path, value.toArray());
+		save();
+		reload();
+	}
+
 	public String getString(String path) {
 		return data.getString(path);
+	}
+
+	public ArrayList<String> getArrayList(String path) {
+		ArrayList<String> al = new ArrayList<String>();
+		if (data.getString(path) != null) {
+			al.addAll((List<String>) data.getList(path));
+		}
+		return al;
 	}
 
 	public Location getLocation(String path) {

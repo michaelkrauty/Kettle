@@ -1,6 +1,7 @@
 package me.michaelkrauty.Kettle.command.essential;
 
 import me.michaelkrauty.Kettle.Kettle;
+import me.michaelkrauty.Kettle.Objects.User;
 import me.michaelkrauty.Kettle.util.AbstractCommand;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -23,7 +24,8 @@ public class AdminLoginCommand extends AbstractCommand {
 
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
 		Player player = (Player) sender;
-		if ((Boolean) kettle.sql.getUser(player.getUniqueId()).get("admin")) {
+		User user = kettle.getUser(player);
+		if (user.isAdmin()) {
 			if (args.length != 0) {
 				if (args[0].equalsIgnoreCase(kettle.configFile.getString("superuser_pass"))) {
 					if (!kettle.admins.contains(player.getName())) {
