@@ -74,6 +74,7 @@ public class Kettle extends JavaPlugin {
 		schedule = new Schedule(this);
 
 		loadLockers();
+		loadUsers();
 
 		log.info("Kettle version " + getDescription().getVersion() + " enabled!");
 	}
@@ -181,6 +182,13 @@ public class Kettle extends JavaPlugin {
 				lockers.add(new Locker(kettle, loc));
 			}
 		}
+	}
+
+	public void loadUsers() {
+			for (Player player : kettle.getServer().getOnlinePlayers()) {
+				if (kettle.getUser(player) == null)
+					kettle.users.add(new User(kettle, player));
+			}
 	}
 
 	public Locker getLocker(Location loc) {
