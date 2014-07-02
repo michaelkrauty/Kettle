@@ -30,21 +30,18 @@ public class PlayerListener implements Listener {
 	}
 
 	@EventHandler
-	public void onPlayerLogin(PlayerLoginEvent event) {
+	public void onPlayerJoin(PlayerJoinEvent event) {
 		if (kettle.getUser(event.getPlayer()) == null)
 			kettle.users.add(new User(kettle, event.getPlayer()));
-	}
-
-	@EventHandler
-	public void onPlayerJoin(PlayerJoinEvent event) {
 		final Player player = event.getPlayer();
+		/*
 		if (!kettle.sql.userExists(player.getUniqueId())) {
 			kettle.sql.addUser(player.getUniqueId());
 		}
 		UUID uuid = player.getUniqueId();
 		kettle.sql.updateUsername(uuid);
 		kettle.sql.updateIP(uuid, player.getAddress());
-		kettle.sql.updateLastLogin(uuid);
+		kettle.sql.updateLastLogin(uuid);*/
 		kettle.getServer().getScheduler().scheduleAsyncDelayedTask(kettle, new Runnable() {
 			@Override
 			public void run() {
