@@ -20,7 +20,8 @@ public class SQL {
 
 	public SQL(Kettle instance) {
 		kettle = instance;
-		openConnection();
+		if (!openConnection())
+			return;
 		checkTables();
 	}
 
@@ -28,9 +29,11 @@ public class SQL {
 
 	public synchronized boolean openConnection() {
 		try {
-			connection = DriverManager.getConnection("jdbc:mysql://192.187.118.202:3306/KettleTest", kettle.configFile.getString("db_user"), kettle.configFile.getString("db_pass"));
+			// connection = DriverManager.getConnection("jdbc:mysql://" + kettle.configFile.getString("db_host") + ":" + kettle.configFile.getInt("db_port") + "/" + kettle.configFile.getString("db_database"), kettle.configFile.getString("db_user"), kettle.configFile.getString("db_pass"));
+			connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/kettle", "kettle", null);
 		} catch (Exception e) {
 			System.out.println("COULD NOT CONNECT TO SQL DATABASE, SHUTTING DOWN");
+			System.out.println(e.getMessage());
 			kettle.getServer().shutdown();
 			return false;
 		}
@@ -50,9 +53,12 @@ public class SQL {
 	private synchronized boolean checkTables() {
 		boolean res = true;
 		try {
-			PreparedStatement stmt = connection.prepareStatement("CREATE TABLE IF NOT EXISTS `users` (uuid varchar(256) PRIMARY KEY, username varchar(256), admin tinyint, ip varchar(256), firstlogin long, lastlogin long);");
+			PreparedStatement stmt;
+			stmt = connection.prepareStatement("CREATE TABLE IF NOT EXISTS `users` (uuid varchar(256) PRIMARY KEY, username varchar(256), admin tinyint, ip varchar(256), firstlogin long, lastlogin long, power long);");
 			stmt.execute();
 			stmt = connection.prepareStatement("CREATE TABLE IF NOT EXISTS `lockers` (location varchar(256) PRIMARY KEY, owner varchar(256), users varchar(256), lastinteract long);");
+			stmt.execute();
+			stmt = connection.prepareStatement("CREATE TABLE IF NOT EXISTS `factions`(name varchar(255) PRIMARY KEY, desc varchar(255), members varchar(255), allies varchar(255), enemies varchar(255), land varchar(255));");
 			stmt.execute();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -64,7 +70,7 @@ public class SQL {
 	public synchronized boolean userExists(UUID userUUID) {
 		try {
 			PreparedStatement sql = connection
-					.prepareStatement("SELECT * FROM `users` WHERE UUID=?;");
+					.prepareStatement("SELECT * FROM `users` WHERE `UUID`=?;");
 			sql.setString(1, userUUID.toString());
 			ResultSet resultSet = sql.executeQuery();
 			boolean containsServer = resultSet.next();
@@ -79,8 +85,23 @@ public class SQL {
 	public synchronized boolean lockerExists(Location location) {
 		try {
 			PreparedStatement sql = connection
-					.prepareStatement("SELECT * FROM `lockers` WHERE location=?;");
+					.prepareStatement("SELECT * FROM `lockers` WHERE `location`=?;");
 			sql.setString(1, kettle.locationToString(location));
+			ResultSet resultSet = sql.executeQuery();
+			boolean contains = resultSet.next();
+
+			return contains;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+	public synchronized boolean factionExists(String name) {
+		try {
+			PreparedStatement sql = connection
+					.prepareStatement("SELECT * FROM `factions` WHERE `name`=?;");
+			sql.setString(1, name);
 			ResultSet resultSet = sql.executeQuery();
 			boolean contains = resultSet.next();
 
@@ -166,6 +187,25 @@ public class SQL {
 		return null;
 	}
 
+	public synchronized HashMap getFaction(String name) {
+		try {
+			if (factionExists(name)) {
+				PreparedStatement sql = connection.prepareStatement("SELECT * FROM `factions` WHERE `name`=?");
+				sql.setString(1, name);
+
+				ResultSet res = sql.executeQuery();
+				res.next();
+				HashMap ret = new HashMap();
+				ret.put("name", name);
+				ret.put("description", res.getString("desc"));
+				return ret;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
 	public synchronized void updateLocker(Location location, UUID owner, ArrayList<UUID> users, long lastInteract) {
 		try {
 			PreparedStatement sql = connection.prepareStatement("UPDATE `lockers` SET `owner`=?, `users`=?, `lastinteract`=? WHERE `location`=?;");
@@ -198,7 +238,8 @@ public class SQL {
 			}
 			res.close();
 			return locked;
-		} catch (Exception ignored) {}
+		} catch (Exception ignored) {
+		}
 		return null;
 	}
 

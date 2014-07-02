@@ -1,5 +1,8 @@
+db_host: localhost
+db_port: 3306
 db_user: kettle
 db_pass: 1234
+db_database: Kettle
 
 ### CHANGE THIS PASSWORD ###
 # This is the password admins will use to execute admin commands

@@ -1,6 +1,7 @@
 package me.michaelkrauty.Kettle;
 
 import me.michaelkrauty.Kettle.Objects.Locker;
+import me.michaelkrauty.Kettle.Objects.User;
 import me.michaelkrauty.Kettle.command.essential.*;
 import me.michaelkrauty.Kettle.command.factions.FactionsCommand;
 import me.michaelkrauty.Kettle.command.kettle.KettleCommand;
@@ -45,6 +46,8 @@ public class Kettle extends JavaPlugin {
 	public SQL sql;
 	public Schedule schedule;
 
+	public ArrayList<User> users = new ArrayList<User>();
+
 	public ArrayList<Locker> lockers = new ArrayList<Locker>();
 
 	public static ArrayList<String> admins = new ArrayList<String>();
@@ -71,8 +74,7 @@ public class Kettle extends JavaPlugin {
 
 		loadLockers();
 
-		PluginDescriptionFile pdfFile = this.getDescription();
-		log.info("Kettle version " + pdfFile.getVersion() + " enabled!");
+		log.info("Kettle version " + getDescription().getVersion() + " enabled!");
 	}
 
 	public void onDisable() {
@@ -211,5 +213,16 @@ public class Kettle extends JavaPlugin {
 
 	public void copyLocker(Location loc1, Location loc2) {
 		createLocker(loc2, getLocker(loc1).getOwner());
+	}
+
+	public User getUser(Player player) {
+		if (users.size() != 0) {
+			for (int i = 0; i < users.size(); i++) {
+				if (users.get(i).getPlayer() == player) {
+					return users.get(i);
+				}
+			}
+		}
+		return null;
 	}
 }

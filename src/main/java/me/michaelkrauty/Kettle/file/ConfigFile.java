@@ -56,6 +56,10 @@ public class ConfigFile {
 		return config.getString(path);
 	}
 
+	public int getInt(String path) {
+		return config.getInt(path);
+	}
+
 	public long getLong(String path) {
 		return config.getLong(path);
 	}

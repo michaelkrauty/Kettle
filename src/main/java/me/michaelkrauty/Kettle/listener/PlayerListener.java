@@ -2,6 +2,7 @@ package me.michaelkrauty.Kettle.listener;
 
 import me.michaelkrauty.Kettle.Kettle;
 import me.michaelkrauty.Kettle.Objects.Locker;
+import me.michaelkrauty.Kettle.Objects.User;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -11,10 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.event.player.*;
 
 import java.util.UUID;
 
@@ -29,6 +27,12 @@ public class PlayerListener implements Listener {
 
 	public PlayerListener(Kettle instance) {
 		kettle = instance;
+	}
+
+	@EventHandler
+	public void onPlayerLogin(PlayerLoginEvent event) {
+		if (kettle.getUser(event.getPlayer()) == null)
+			kettle.users.add(new User(kettle, event.getPlayer()));
 	}
 
 	@EventHandler
