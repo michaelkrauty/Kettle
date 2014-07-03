@@ -40,11 +40,7 @@ public class User {
 			playerData.set("admin", false);
 			admin = false;
 		}
-		if (playerData.getString("lastlocation") != null)
-			lastLocation = kettle.stringToLocation(playerData.getString("lastlocation"));
-		playerData.set("lastlogin", new Date(System.currentTimeMillis()));
-		lastLogin = new Date(System.currentTimeMillis());
-		admin = playerData.getBoolean("admin");
+		loadInfo();
 		savePlayerFile();
 		reloadPlayerFile();
 	}
@@ -53,6 +49,14 @@ public class User {
 	/**
 	 * UTIL
 	 */
+
+	private void loadInfo() {
+		if (playerData.getString("lastlocation") != null)
+			lastLocation = kettle.stringToLocation(playerData.getString("lastlocation"));
+		playerData.set("lastlogin", new Date(System.currentTimeMillis()));
+		lastLogin = new Date(System.currentTimeMillis());
+		admin = playerData.getBoolean("admin");
+	}
 
 	private boolean checkPlayerFile() {
 		boolean exists = !playerFile.exists();
@@ -69,6 +73,7 @@ public class User {
 	public void reloadPlayerFile() {
 		try {
 			playerData.load(playerFile);
+			loadInfo();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
