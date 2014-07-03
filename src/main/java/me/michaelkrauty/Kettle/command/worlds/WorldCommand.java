@@ -1,6 +1,7 @@
 package me.michaelkrauty.Kettle.command.worlds;
 
 import me.michaelkrauty.Kettle.Kettle;
+import me.michaelkrauty.Kettle.Objects.User;
 import me.michaelkrauty.Kettle.util.AbstractCommand;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
@@ -31,6 +32,7 @@ public class WorldCommand extends AbstractCommand {
 
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
 		Player player = (Player) sender;
+		User user = kettle.getUser(player);
 		if (kettle.admins.contains(player.getName())) {
 			if (args.length == 0) {
 				String worlds = "";
@@ -51,7 +53,7 @@ public class WorldCommand extends AbstractCommand {
 					return true;
 				}
 				if (kettle.getServer().getWorld(args[0]) != null) {
-					player.teleport(kettle.getServer().getWorld(args[0]).getSpawnLocation());
+					user.teleport(kettle.getServer().getWorld(args[0]).getSpawnLocation());
 					return true;
 				} else {
 					player.sendMessage(ChatColor.RED + "Invalid world: " + args[0]);

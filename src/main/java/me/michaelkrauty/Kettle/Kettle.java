@@ -120,6 +120,7 @@ public class Kettle extends JavaPlugin {
 		new SetspawnCommand("setspawn", "/<command>", "SetSpawn Command", this).register();
 		new WorldCommand("world", "/<command> [args]", "World Command", this).register();
 		new LockerCommand("locker", "/<command>", "Locker Command", this).register();
+		new BackCommand("back", "/<command>", "Back Command", this).register();
 
 		/** Factions commands */
 		new FactionsCommand("factions", "/<command> [args]", "The factions command", Arrays.asList("f", "faction", "fac"), this).register();
@@ -145,6 +146,11 @@ public class Kettle extends JavaPlugin {
 		int y = loc.getBlockY();
 		int z = loc.getBlockZ();
 		return world + "," + x + "," + y + "," + z;
+	}
+
+	public Location stringToLocation(String str) {
+		String[] loc = str.split(",");
+		return new Location(getServer().getWorld(loc[0]), Integer.parseInt(loc[1]), Integer.parseInt(loc[2]), Integer.parseInt(loc[3]));
 	}
 
 	public Location getSpawnLocation() {
