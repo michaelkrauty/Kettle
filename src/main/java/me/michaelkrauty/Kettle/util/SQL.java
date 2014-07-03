@@ -68,21 +68,6 @@ public class SQL {
 		return res;
 	}
 
-	public synchronized boolean lockerExists(Location location) {
-		try {
-			PreparedStatement sql = connection
-					.prepareStatement("SELECT * FROM `lockers` WHERE `location`=?;");
-			sql.setString(1, kettle.locationToString(location));
-			ResultSet resultSet = sql.executeQuery();
-			boolean contains = resultSet.next();
-
-			return contains;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return false;
-		}
-	}
-
 	public synchronized boolean factionExists(String name) {
 		try {
 			PreparedStatement sql = connection
@@ -96,41 +81,6 @@ public class SQL {
 			e.printStackTrace();
 			return false;
 		}
-	}
-
-	public synchronized void addLocker(Location location, UUID owner) {
-		try {
-			if (!lockerExists(location)) {
-				PreparedStatement sql = connection.prepareStatement("INSERT INTO `lockers`(`location`, `owner`, `users`, `lastinteract`) VALUES (?,?,?,?)");
-				sql.setString(1, kettle.locationToString(location));
-				sql.setString(2, owner.toString());
-				sql.setString(3, owner.toString());
-				sql.setLong(4, System.currentTimeMillis());
-				sql.executeUpdate();
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	public synchronized HashMap getLocker(Location location) {
-		try {
-			if (lockerExists(location)) {
-				PreparedStatement sql = connection.prepareStatement("SELECT * FROM `lockers` WHERE `location`=?;");
-				sql.setString(1, kettle.locationToString(location));
-
-				ResultSet res = sql.executeQuery();
-				res.next();
-				HashMap ret = new HashMap();
-				ret.put("owner", UUID.fromString(res.getString("owner")));
-				ret.put("users", res.getString("users"));
-				ret.put("lastinteract", Long.toString(res.getLong("lastinteract")));
-				return ret;
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
 	}
 
 	public synchronized HashMap getFaction(String name) {
@@ -150,88 +100,5 @@ public class SQL {
 			e.printStackTrace();
 		}
 		return null;
-	}
-
-	public synchronized void updateLocker(Location location, UUID owner, ArrayList<UUID> users, long lastInteract) {
-		try {
-			PreparedStatement sql = connection.prepareStatement("UPDATE `lockers` SET `owner`=?, `users`=?, `lastinteract`=? WHERE `location`=?;");
-			sql.setString(1, owner.toString());
-			String userString = "";
-			for (int i = 0; i < users.size(); i++) {
-				if (i == 0)
-					userString = users.get(i).toString();
-				else
-					userString = userString + "," + users.get(i).toString();
-			}
-			sql.setString(2, userString);
-			sql.setLong(3, lastInteract);
-			sql.setString(4, kettle.locationToString(location));
-			sql.executeUpdate();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	public synchronized ArrayList<Location> getAllLockers() {
-		try {
-			PreparedStatement sql = connection.prepareStatement("SELECT * FROM `lockers`;");
-			ResultSet res = sql.executeQuery();
-			ArrayList<Location> locked = new ArrayList<Location>();
-			while (!res.isLast()) {
-				res.next();
-				String[] locString = res.getString("location").split(",");
-				locked.add(new Location(kettle.getServer().getWorld(locString[0]), Integer.parseInt(locString[1]), Integer.parseInt(locString[2]), Integer.parseInt(locString[3])));
-			}
-			res.close();
-			return locked;
-		} catch (Exception ignored) {
-		}
-		return null;
-	}
-
-	public synchronized boolean removeLocker(Location location) {
-		try {
-			if (lockerExists(location)) {
-				PreparedStatement sql = connection.prepareStatement("DELETE FROM `lockers` WHERE `location`=?;");
-				sql.setString(1, kettle.locationToString(location));
-				return sql.execute();
-			}
-			return false;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return false;
-	}
-
-	public synchronized boolean updateLockerUsers(Location location, String users) {
-		try {
-			if (lockerExists(location)) {
-				PreparedStatement sql = connection.prepareStatement("UPDATE `lockers` SET `users`=?, WHERE `location`=?");
-				sql.setString(1, users);
-				sql.setString(2, kettle.locationToString(location));
-				sql.executeUpdate();
-				return true;
-			}
-			return false;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return false;
-	}
-
-	public synchronized boolean updateLockerExpiry(Location location, long expiry) {
-		try {
-			if (lockerExists(location)) {
-				PreparedStatement sql = connection.prepareStatement("UPDATE `lockers` SET `expiry`=?, WHERE `location`=?");
-				sql.setLong(1, expiry);
-				sql.setString(2, kettle.locationToString(location));
-				sql.executeUpdate();
-				return true;
-			}
-			return false;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return false;
 	}
 }

@@ -1,5 +1,6 @@
 package me.michaelkrauty.Kettle;
 
+import me.michaelkrauty.Kettle.Objects.Faction;
 import me.michaelkrauty.Kettle.Objects.Locker;
 import me.michaelkrauty.Kettle.Objects.User;
 import me.michaelkrauty.Kettle.command.essential.*;
@@ -19,7 +20,6 @@ import me.michaelkrauty.Kettle.util.SQL;
 import me.michaelkrauty.Kettle.util.Schedule;
 import org.bukkit.Location;
 import org.bukkit.WorldCreator;
-import org.bukkit.WorldType;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
@@ -52,6 +52,8 @@ public class Kettle extends JavaPlugin {
 	public ArrayList<User> users = new ArrayList<User>();
 
 	public ArrayList<Locker> lockers = new ArrayList<Locker>();
+
+	public ArrayList<Faction> factions = new ArrayList<Faction>();
 
 	public static ArrayList<String> admins = new ArrayList<String>();
 
@@ -179,19 +181,18 @@ public class Kettle extends JavaPlugin {
 	}
 
 	public void loadLockers() {
-		ArrayList<Location> lock;
-		if ((lock = kettle.sql.getAllLockers()) != null) {
-			for (Location loc : lock) {
-				lockers.add(new Locker(kettle, loc));
-			}
+		for (File file : new File(getDataFolder() + "/lockers").listFiles()) {
+			String locString = file.getName().split(".")[0];
+			String[] loc = locString.split(",");
+			lockers.add(new Locker(kettle, new Location(kettle.getServer().getWorld(loc[0]), Integer.parseInt(loc[1]), Integer.parseInt(loc[2]), Integer.parseInt(loc[3]))));
 		}
 	}
 
 	public void loadUsers() {
-			for (Player player : kettle.getServer().getOnlinePlayers()) {
-				if (kettle.getUser(player) == null)
-					kettle.users.add(new User(kettle, player));
-			}
+		for (Player player : kettle.getServer().getOnlinePlayers()) {
+			if (kettle.getUser(player) == null)
+				kettle.users.add(new User(kettle, player));
+		}
 	}
 
 	public Locker getLocker(Location loc) {
@@ -212,15 +213,7 @@ public class Kettle extends JavaPlugin {
 
 	public void createLocker(Location loc, UUID owner) {
 		if (!lockerExists(loc)) {
-			final Location loc1 = loc;
-			final UUID owner1 = owner;
-			getServer().getScheduler().scheduleAsyncDelayedTask(this, new Runnable() {
-				@Override
-				public void run() {
-					kettle.sql.addLocker(loc1, owner1);
-					lockers.add(new Locker(kettle, loc1));
-				}
-			});
+			lockers.add(new Locker(kettle, loc, owner));
 		}
 	}
 

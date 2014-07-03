@@ -2,9 +2,10 @@ package me.michaelkrauty.Kettle.Objects;
 
 import me.michaelkrauty.Kettle.Kettle;
 import org.bukkit.Location;
+import org.bukkit.configuration.file.YamlConfiguration;
 
+import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.UUID;
 
 /**
@@ -14,6 +15,9 @@ import java.util.UUID;
  */
 public class Locker {
 
+	File lockerFile;
+	YamlConfiguration lockerData = new YamlConfiguration();
+
 	private final Kettle kettle;
 	private Location location;
 	private UUID owner;
@@ -22,19 +26,33 @@ public class Locker {
 
 	public Locker(Kettle kettle, Location loc) {
 		this.kettle = kettle;
-		HashMap info = kettle.sql.getLocker(loc);
+		lockerFile = new File(kettle.getDataFolder() + "/lockers/" + kettle.locationToString(location) + ".yml");
+		checkLockerFile();
+		reloadLockerFile();
 		location = loc;
-		owner = (UUID) info.get("owner");
+		owner = UUID.fromString(lockerData.getString("owner"));
 		users = new ArrayList<UUID>();
-		for (String str : ((String) info.get("users")).split(",")) {
+		for (String str : lockerData.getString("users").split(",")) {
 			if (!str.equals(""))
 				users.add(UUID.fromString(str));
 		}
-		lastInteract = Long.parseLong((String) info.get("lastinteract"));
+		lastInteract = lockerData.getLong("lastinteract");
+		saveLockerFile();
+		reloadLockerFile();
 	}
 
-	public void saveInfo() {
-		kettle.sql.updateLocker(location, owner, users, lastInteract);
+	public Locker(Kettle kettle, Location loc, UUID owner) {
+		this.kettle = kettle;
+		lockerFile = new File(kettle.getDataFolder() + "/lockers/" + kettle.locationToString(location) + ".yml");
+		checkLockerFile();
+		reloadLockerFile();
+		location = loc;
+		this.owner = owner;
+		users = new ArrayList<UUID>();
+		users.add(owner);
+		lastInteract = System.currentTimeMillis();
+		saveLockerFile();
+		reloadLockerFile();
 	}
 
 	public void addUser(UUID user) {
@@ -97,12 +115,40 @@ public class Locker {
 	}
 
 	public void delete() {
-		kettle.sql.removeLocker(location);
+		lockerFile.delete();
 		kettle.lockers.remove(this);
 	}
 
 	public void unload() {
-		saveInfo();
+		saveLockerFile();
 		kettle.lockers.remove(this);
+	}
+
+	private boolean checkLockerFile() {
+		boolean exists = !lockerFile.exists();
+		if (!lockerFile.exists()) {
+			try {
+				lockerFile.createNewFile();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return exists;
+	}
+
+	public void reloadLockerFile() {
+		try {
+			lockerData.load(lockerFile);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void saveLockerFile() {
+		try {
+			lockerData.save(lockerFile);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 }
