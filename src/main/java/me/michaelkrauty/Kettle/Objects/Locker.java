@@ -6,6 +6,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -26,41 +27,43 @@ public class Locker {
 
 	public Locker(Kettle kettle, Location loc) {
 		this.kettle = kettle;
-		lockerFile = new File(kettle.getDataFolder() + "/lockers/" + kettle.locationToString(location) + ".yml");
+		lockerFile = new File(kettle.getDataFolder() + "/lockers/" + kettle.locationToString(loc) + ".yml");
 		checkLockerFile();
 		reloadLockerFile();
 		location = loc;
 		owner = UUID.fromString(lockerData.getString("owner"));
 		users = new ArrayList<UUID>();
-		for (String str : lockerData.getString("users").split(",")) {
-			if (!str.equals(""))
-				users.add(UUID.fromString(str));
-		}
+		for (String str : (List<String>) lockerData.getList("users"))
+			users.add(UUID.fromString(str));
 		lastInteract = lockerData.getLong("lastinteract");
-		saveLockerFile();
 		reloadLockerFile();
 	}
 
 	public Locker(Kettle kettle, Location loc, UUID owner) {
 		this.kettle = kettle;
-		lockerFile = new File(kettle.getDataFolder() + "/lockers/" + kettle.locationToString(location) + ".yml");
+		lockerFile = new File(kettle.getDataFolder() + "/lockers/" + kettle.locationToString(loc) + ".yml");
 		checkLockerFile();
 		reloadLockerFile();
+
 		location = loc;
-		this.owner = owner;
+		setOwner(owner);
 		users = new ArrayList<UUID>();
 		users.add(owner);
-		lastInteract = System.currentTimeMillis();
+		setUsers(users);
+		setLastInteract();
+
 		saveLockerFile();
 		reloadLockerFile();
 	}
 
 	public void addUser(UUID user) {
 		users.add(user);
+		setUsers(users);
 	}
 
 	public void removeUser(UUID user) {
 		users.remove(user);
+		setUsers(users);
 	}
 
 	public Location getLocation() {
@@ -100,18 +103,29 @@ public class Locker {
 
 	public void setLocation(Location location) {
 		this.location = location;
+		saveLockerFile();
 	}
 
 	public void setOwner(UUID owner) {
 		this.owner = owner;
+		lockerData.set("owner", owner.toString());
+		saveLockerFile();
 	}
 
 	public void setUsers(ArrayList<UUID> users) {
 		this.users = users;
+		ArrayList<String> test = new ArrayList<String>();
+		for (UUID user : users) {
+			test.add(user.toString());
+		}
+		lockerData.set("users", test);
+		saveLockerFile();
 	}
 
 	public void setLastInteract() {
 		lastInteract = System.currentTimeMillis();
+		lockerData.set("lastinteract", lastInteract);
+		saveLockerFile();
 	}
 
 	public void delete() {

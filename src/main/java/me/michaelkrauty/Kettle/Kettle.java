@@ -188,7 +188,7 @@ public class Kettle extends JavaPlugin {
 
 	public void loadLockers() {
 		for (File file : new File(getDataFolder() + "/lockers").listFiles()) {
-			String locString = file.getName().split(".")[0];
+			String locString = file.getName().split("\\.")[0];
 			String[] loc = locString.split(",");
 			lockers.add(new Locker(kettle, new Location(kettle.getServer().getWorld(loc[0]), Integer.parseInt(loc[1]), Integer.parseInt(loc[2]), Integer.parseInt(loc[3]))));
 		}
@@ -229,6 +229,8 @@ public class Kettle extends JavaPlugin {
 
 	public void copyLocker(Location loc1, Location loc2) {
 		createLocker(loc2, getLocker(loc1).getOwner());
+		getLocker(loc2).setUsers(getLocker(loc1).getUsers());
+		getLocker(loc2).setLastInteract();
 	}
 
 	public User getUser(Player player) {

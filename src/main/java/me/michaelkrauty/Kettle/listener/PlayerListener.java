@@ -71,53 +71,51 @@ public class PlayerListener implements Listener {
 	@EventHandler
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		Block clickedBlock = event.getClickedBlock();
-		try {
-			if (clickedBlock.getType() == Material.CHEST) {
-				if (isProtected(clickedBlock.getLocation())) {
-					Locker locker = kettle.getLocker(clickedBlock.getLocation());
-					if (!locker.userHasAccess(event.getPlayer().getUniqueId())) {
-						event.getPlayer().sendMessage(ChatColor.GRAY + "This chest is owned by " + kettle.getServer().getOfflinePlayer(kettle.getLocker(clickedBlock.getLocation()).getOwner()).getName());
-						event.setCancelled(true);
-						return;
-					}
+		if (clickedBlock == null)
+			return;
+		if (clickedBlock.getType() == Material.CHEST) {
+			if (isProtected(clickedBlock.getLocation())) {
+				Locker locker = kettle.getLocker(clickedBlock.getLocation());
+				if (!locker.userHasAccess(event.getPlayer().getUniqueId())) {
+					event.getPlayer().sendMessage(ChatColor.GRAY + "This chest is owned by " + kettle.getServer().getOfflinePlayer(kettle.getLocker(clickedBlock.getLocation()).getOwner()).getName());
+					event.setCancelled(true);
 					return;
 				}
 				return;
 			}
-			if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-				Block block = event.getClickedBlock().getWorld().getBlockAt(event.getClickedBlock().getX() + event.getBlockFace().getModX(), event.getClickedBlock().getY() + event.getBlockFace().getModY(), event.getClickedBlock().getZ() + event.getBlockFace().getModZ());
-				Location blockLocation = block.getLocation();
-				World w = blockLocation.getWorld();
-				int x = blockLocation.getBlockX();
-				int y = blockLocation.getBlockY();
-				int z = blockLocation.getBlockZ();
-				if (w.getBlockAt(x + 1, y, z).getType() == Material.CHEST) {
-					Location loc = new Location(w, x + 1, y, z);
-					if (kettle.getLocker(loc) != null)
-						kettle.copyLocker(loc, blockLocation);
-					return;
-				}
-				if (w.getBlockAt(x - 1, y, z).getType() == Material.CHEST) {
-					Location loc = new Location(w, x - 1, y, z);
-					if (kettle.getLocker(loc) != null)
-						kettle.copyLocker(loc, blockLocation);
-					return;
-				}
-				if (w.getBlockAt(x, y, z + 1).getType() == Material.CHEST) {
-					Location loc = new Location(w, x, y, z + 1);
-					if (kettle.getLocker(loc) != null)
-						kettle.copyLocker(loc, blockLocation);
-					return;
-				}
-				if (w.getBlockAt(x, y, z - 1).getType() == Material.CHEST) {
-					Location loc = new Location(w, x, y, z - 1);
-					if (kettle.getLocker(loc) != null)
-						kettle.copyLocker(loc, blockLocation);
-					return;
-				}
+			return;
+		}
+		if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+			Block block = event.getClickedBlock().getWorld().getBlockAt(event.getClickedBlock().getX() + event.getBlockFace().getModX(), event.getClickedBlock().getY() + event.getBlockFace().getModY(), event.getClickedBlock().getZ() + event.getBlockFace().getModZ());
+			Location blockLocation = block.getLocation();
+			World w = blockLocation.getWorld();
+			int x = blockLocation.getBlockX();
+			int y = blockLocation.getBlockY();
+			int z = blockLocation.getBlockZ();
+			if (w.getBlockAt(x + 1, y, z).getType() == Material.CHEST) {
+				Location loc = new Location(w, x + 1, y, z);
+				if (kettle.getLocker(loc) != null)
+					kettle.copyLocker(loc, blockLocation);
+				return;
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
+			if (w.getBlockAt(x - 1, y, z).getType() == Material.CHEST) {
+				Location loc = new Location(w, x - 1, y, z);
+				if (kettle.getLocker(loc) != null)
+					kettle.copyLocker(loc, blockLocation);
+				return;
+			}
+			if (w.getBlockAt(x, y, z + 1).getType() == Material.CHEST) {
+				Location loc = new Location(w, x, y, z + 1);
+				if (kettle.getLocker(loc) != null)
+					kettle.copyLocker(loc, blockLocation);
+				return;
+			}
+			if (w.getBlockAt(x, y, z - 1).getType() == Material.CHEST) {
+				Location loc = new Location(w, x, y, z - 1);
+				if (kettle.getLocker(loc) != null)
+					kettle.copyLocker(loc, blockLocation);
+				return;
+			}
 		}
 	}
 

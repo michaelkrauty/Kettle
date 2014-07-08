@@ -20,7 +20,7 @@ public class CreateCommand {
 		Player player = (Player) sender;
 		Block targetBlock = player.getTargetBlock(null, 10);
 		Location targetBlockLocation = targetBlock.getLocation();
-		if (targetBlock.getType() != Material.CHEST) {
+		if (targetBlock == null || targetBlock.getType() != Material.CHEST) {
 			player.sendMessage(ChatColor.GRAY + "Make sure you're looking at a " + ChatColor.GREEN + "chest" + ChatColor.GRAY + " within " + ChatColor.GREEN + "10 blocks" + ChatColor.GRAY + " of you");
 			return;
 		}
