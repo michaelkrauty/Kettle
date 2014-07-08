@@ -26,6 +26,7 @@ public class User {
 	private boolean admin;
 	private boolean teleportEnabled = true;
 	private Location lastLocation;
+	private String faction;
 
 
 	public User(Kettle kettle, Player player) {
@@ -35,10 +36,10 @@ public class User {
 		boolean first = checkPlayerFile();
 		reloadPlayerFile();
 		if (first) {
-			playerData.set("firstlogin", new Date(System.currentTimeMillis()));
-			firstLogin = new Date(System.currentTimeMillis());
+			setFirstLogin(new Date(System.currentTimeMillis()));
 			playerData.set("admin", false);
 			admin = false;
+			setFaction(null);
 		}
 		loadInfo();
 		savePlayerFile();
@@ -56,6 +57,7 @@ public class User {
 		playerData.set("lastlogin", new Date(System.currentTimeMillis()));
 		lastLogin = new Date(System.currentTimeMillis());
 		admin = playerData.getBoolean("admin");
+		faction = playerData.getString("faction");
 	}
 
 	private boolean checkPlayerFile() {
@@ -116,6 +118,10 @@ public class User {
 		return this.lastLocation;
 	}
 
+	public String getFaction() {
+		return this.faction;
+	}
+
 
 	/**
 	 * SET
@@ -124,13 +130,24 @@ public class User {
 	public void setTeleportEnabled(boolean bool) {
 		this.teleportEnabled = bool;
 		savePlayerFile();
-		reloadPlayerFile();
 	}
 
 	public void setLastLocation(Location location) {
+		lastLocation = location;
 		playerData.set("lastlocation", kettle.locationToString(location));
 		savePlayerFile();
-		reloadPlayerFile();
+	}
+
+	public void setFaction(String faction) {
+		this.faction = faction;
+		playerData.set("faction", faction);
+		savePlayerFile();
+	}
+
+	public void setFirstLogin(Date firstLogin) {
+		this.firstLogin = firstLogin;
+		playerData.set("firstlogin", firstLogin);
+		savePlayerFile();
 	}
 
 

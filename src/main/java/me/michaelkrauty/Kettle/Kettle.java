@@ -77,8 +77,7 @@ public class Kettle extends JavaPlugin {
 		sql = new SQL(this);
 		schedule = new Schedule(this);
 
-		loadLockers();
-		loadUsers();
+		loadObjects();
 		loadWorlds();
 
 		log.info("Kettle version " + getDescription().getVersion() + " enabled!");
@@ -186,18 +185,26 @@ public class Kettle extends JavaPlugin {
 				.replace("&r", "§r");
 	}
 
+	private void loadWorlds() {
+		for (String worldName : dataFile.getArrayList("worlds"))
+			new WorldCreator(worldName).createWorld();
+	}
+
+	public void loadObjects() {
+		loadLockers();
+		loadUsers();
+		loadFactions();
+	}
+
+	/**
+	 * LOCKERS
+	 */
+
 	public void loadLockers() {
 		for (File file : new File(getDataFolder() + "/lockers").listFiles()) {
 			String locString = file.getName().split("\\.")[0];
 			String[] loc = locString.split(",");
 			lockers.add(new Locker(kettle, new Location(kettle.getServer().getWorld(loc[0]), Integer.parseInt(loc[1]), Integer.parseInt(loc[2]), Integer.parseInt(loc[3]))));
-		}
-	}
-
-	public void loadUsers() {
-		for (Player player : kettle.getServer().getOnlinePlayers()) {
-			if (kettle.getUser(player) == null)
-				kettle.users.add(new User(kettle, player));
 		}
 	}
 
@@ -208,7 +215,6 @@ public class Kettle extends JavaPlugin {
 					return lockers.get(i);
 				}
 			}
-			return null;
 		}
 		return null;
 	}
@@ -233,6 +239,18 @@ public class Kettle extends JavaPlugin {
 		getLocker(loc2).setLastInteract();
 	}
 
+
+	/**
+	 * USERS
+	 */
+
+	public void loadUsers() {
+		for (Player player : kettle.getServer().getOnlinePlayers()) {
+			if (kettle.getUser(player) == null)
+				kettle.users.add(new User(kettle, player));
+		}
+	}
+
 	public User getUser(Player player) {
 		if (users.size() != 0) {
 			for (int i = 0; i < users.size(); i++) {
@@ -244,8 +262,38 @@ public class Kettle extends JavaPlugin {
 		return null;
 	}
 
-	private void loadWorlds() {
-		for (String worldName : dataFile.getArrayList("worlds"))
-			new WorldCreator(worldName).createWorld();
+
+	/**
+	 * FACTIONS
+	 */
+
+	public Faction getFaction(String name) {
+		if (factions.size() != 0) {
+			for (int i = 0; i < factions.size(); i++) {
+				if (factions.get(i).getName().equalsIgnoreCase(name)) {
+					return factions.get(i);
+				}
+			}
+		}
+		return null;
+	}
+
+	public boolean factionExists(String name) {
+		return getFaction(name) != null;
+	}
+
+	public void createFaction(String name, UUID owner) {
+		if (!factionExists(name)) {
+			Faction faction = new Faction(kettle, name);
+			faction.addMember(owner);
+			factions.add(faction);
+		}
+	}
+
+	public void loadFactions() {
+		for (File file : new File(getDataFolder() + "/factions").listFiles()) {
+			String name = file.getName().split("\\.")[0];
+			factions.add(new Faction(kettle, name));
+		}
 	}
 }

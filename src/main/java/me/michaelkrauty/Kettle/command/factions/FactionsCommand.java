@@ -4,6 +4,7 @@ import me.michaelkrauty.Kettle.Kettle;
 import me.michaelkrauty.Kettle.util.AbstractCommand;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import java.util.List;
 
@@ -22,7 +23,12 @@ public class FactionsCommand extends AbstractCommand {
 	}
 
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
-		sender.sendMessage("factions command");
+		Player player = (Player) sender;
+		if (args[0].equalsIgnoreCase("create")) {
+			new CreateCommand(kettle, player, args);
+			return true;
+		}
+		player.sendMessage("unknown command");
 		return true;
 	}
 }
