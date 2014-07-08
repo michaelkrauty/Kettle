@@ -16,7 +16,6 @@ import me.michaelkrauty.Kettle.file.MotdFile;
 import me.michaelkrauty.Kettle.listener.BlockListener;
 import me.michaelkrauty.Kettle.listener.PlayerListener;
 import me.michaelkrauty.Kettle.util.Error;
-import me.michaelkrauty.Kettle.util.SQL;
 import me.michaelkrauty.Kettle.util.Schedule;
 import org.bukkit.Location;
 import org.bukkit.WorldCreator;
@@ -46,7 +45,6 @@ public class Kettle extends JavaPlugin {
 	public LangFile langFile;
 	public DataFile dataFile;
 
-	public SQL sql;
 	public Schedule schedule;
 
 	public ArrayList<User> users = new ArrayList<User>();
@@ -74,7 +72,6 @@ public class Kettle extends JavaPlugin {
 		motdFile = new MotdFile(this);
 		langFile = new LangFile(this);
 		dataFile = new DataFile(this);
-		sql = new SQL(this);
 		schedule = new Schedule(this);
 
 		loadObjects();
@@ -90,7 +87,6 @@ public class Kettle extends JavaPlugin {
 			}
 		} catch (Exception ignored) {
 		}
-		kettle.sql.closeConnection();
 		PluginDescriptionFile pdfFile = this.getDescription();
 		log.info(pdfFile.getName() + " version " + pdfFile.getVersion() + " disabled!");
 	}
