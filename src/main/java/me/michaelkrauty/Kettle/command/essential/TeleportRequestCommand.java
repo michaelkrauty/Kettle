@@ -1,6 +1,7 @@
 package me.michaelkrauty.Kettle.command.essential;
 
 import me.michaelkrauty.Kettle.Kettle;
+import me.michaelkrauty.Kettle.Objects.Objects;
 import me.michaelkrauty.Kettle.Objects.User;
 import me.michaelkrauty.Kettle.util.AbstractCommand;
 import org.bukkit.command.Command;
@@ -17,10 +18,12 @@ import java.util.List;
 public class TeleportRequestCommand extends AbstractCommand {
 
 	private final Kettle kettle;
+	private Objects objects;
 
 	public TeleportRequestCommand(String command, String usage, String description, List<String> args, Kettle instance) {
 		super(command, usage, description, args);
 		kettle = instance;
+		objects = kettle.objects;
 	}
 
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
@@ -35,7 +38,7 @@ public class TeleportRequestCommand extends AbstractCommand {
 		Player player = (Player) sender;
 		if (kettle.getServer().getPlayer(args[0]) instanceof Player) {
 			Player target = kettle.getServer().getPlayer(args[0]);
-			User user = kettle.getUser(target);
+			User user = objects.getUser(target);
 			if (user.teleportEnabled()) {
 				// TODO: tpa
 			} else {

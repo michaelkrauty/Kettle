@@ -20,6 +20,7 @@ public class Locker {
 	YamlConfiguration lockerData = new YamlConfiguration();
 
 	private final Kettle kettle;
+	private Objects objects;
 	private Location location;
 	private UUID owner;
 	private ArrayList<UUID> users;
@@ -27,6 +28,7 @@ public class Locker {
 
 	public Locker(Kettle kettle, Location loc) {
 		this.kettle = kettle;
+		objects = kettle.objects;
 		lockerFile = new File(kettle.getDataFolder() + "/lockers/" + kettle.locationToString(loc) + ".yml");
 		checkLockerFile();
 		reloadLockerFile();
@@ -130,12 +132,12 @@ public class Locker {
 
 	public void delete() {
 		lockerFile.delete();
-		kettle.lockers.remove(this);
+		objects.lockers.remove(this);
 	}
 
 	public void unload() {
 		saveLockerFile();
-		kettle.lockers.remove(this);
+		objects.lockers.remove(this);
 	}
 
 	private boolean checkLockerFile() {

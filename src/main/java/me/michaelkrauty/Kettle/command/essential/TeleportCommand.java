@@ -1,6 +1,7 @@
 package me.michaelkrauty.Kettle.command.essential;
 
 import me.michaelkrauty.Kettle.Kettle;
+import me.michaelkrauty.Kettle.Objects.Objects;
 import me.michaelkrauty.Kettle.Objects.User;
 import me.michaelkrauty.Kettle.util.AbstractCommand;
 import org.bukkit.command.Command;
@@ -17,10 +18,12 @@ import java.util.List;
 public class TeleportCommand extends AbstractCommand {
 
 	private final Kettle kettle;
+	private Objects objects;
 
 	public TeleportCommand(String command, String usage, String description, List<String> aliases, Kettle instance) {
 		super(command, usage, description, aliases);
 		kettle = instance;
+		objects = kettle.objects;
 	}
 
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
@@ -31,7 +34,7 @@ public class TeleportCommand extends AbstractCommand {
 		if (args.length == 1) {
 			if (sender instanceof Player) {
 				Player player = (Player) sender;
-				User user = kettle.getUser(player);
+				User user = objects.getUser(player);
 				if (kettle.getServer().getPlayer(args[0]) instanceof Player) {
 					Player target = kettle.getServer().getPlayer(args[0]);
 					if (sender.hasPermission("kettle.teleport")) {
@@ -54,7 +57,7 @@ public class TeleportCommand extends AbstractCommand {
 		if (args.length == 2) {
 			if (kettle.getServer().getPlayer(args[0]) instanceof Player) {
 				Player player1 = kettle.getServer().getPlayer(args[0]);
-				User user1 = kettle.getUser(player1);
+				User user1 = objects.getUser(player1);
 				if (kettle.getServer().getPlayer(args[1]) instanceof Player) {
 					Player player2 = kettle.getServer().getPlayer(args[1]);
 					if (sender.hasPermission("kettle.teleport.others")) {

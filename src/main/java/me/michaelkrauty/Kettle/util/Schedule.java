@@ -2,6 +2,7 @@ package me.michaelkrauty.Kettle.util;
 
 import me.michaelkrauty.Kettle.Kettle;
 import me.michaelkrauty.Kettle.Objects.Locker;
+import me.michaelkrauty.Kettle.Objects.Objects;
 import org.bukkit.Material;
 
 /**
@@ -12,9 +13,11 @@ import org.bukkit.Material;
 public class Schedule {
 
 	private Kettle kettle;
+	private Objects objects;
 
 	public Schedule(Kettle instance) {
 		kettle = instance;
+		objects = kettle.objects;
 		kettle.getServer().getScheduler().scheduleSyncRepeatingTask(kettle, new Runnable() {
 			@Override
 			public void run() {
@@ -40,7 +43,7 @@ public class Schedule {
 
 	public void checkChests() {
 		try {
-			for (Locker locker : kettle.lockers) {
+			for (Locker locker : objects.lockers) {
 				if (locker.getLocation().getWorld().getBlockAt(locker.getLocation()).getType() != Material.CHEST) {
 					locker.delete();
 				}

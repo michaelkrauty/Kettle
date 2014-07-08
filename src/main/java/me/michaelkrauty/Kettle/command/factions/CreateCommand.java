@@ -1,6 +1,7 @@
 package me.michaelkrauty.Kettle.command.factions;
 
 import me.michaelkrauty.Kettle.Kettle;
+import me.michaelkrauty.Kettle.Objects.Objects;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -12,15 +13,16 @@ import org.bukkit.entity.Player;
 public class CreateCommand {
 
 	public CreateCommand(Kettle kettle, Player player, String[] args) {
-		if (kettle.getFaction(args[1]) != null) {
+		Objects objects = kettle.objects;
+		if (objects.getFaction(args[1]) != null) {
 			player.sendMessage(ChatColor.RED + "The faction " + args[1] + " already exists.");
 			return;
 		}
-		if (kettle.getUser(player).getFaction() != null) {
+		if (objects.getUser(player).getFaction() != null) {
 			player.sendMessage(ChatColor.RED + "You already belong to a faction!");
 			return;
 		}
-		kettle.createFaction(args[1], player.getUniqueId());
-		kettle.getUser(player).setFaction(args[1]);
+		objects.createFaction(args[1], player.getUniqueId());
+		objects.getUser(player).setFaction(args[1]);
 	}
 }

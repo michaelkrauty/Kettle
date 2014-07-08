@@ -1,6 +1,7 @@
 package me.michaelkrauty.Kettle.command.essential;
 
 import me.michaelkrauty.Kettle.Kettle;
+import me.michaelkrauty.Kettle.Objects.Objects;
 import me.michaelkrauty.Kettle.Objects.User;
 import me.michaelkrauty.Kettle.util.AbstractCommand;
 import org.bukkit.ChatColor;
@@ -16,6 +17,7 @@ import org.bukkit.entity.Player;
 public class AdminLoginCommand extends AbstractCommand {
 
 	private final Kettle kettle;
+	private Objects objects;
 
 	public AdminLoginCommand(String command, String usage, String description, Kettle instance) {
 		super(command, usage, description);
@@ -24,7 +26,8 @@ public class AdminLoginCommand extends AbstractCommand {
 
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
 		Player player = (Player) sender;
-		User user = kettle.getUser(player);
+		objects = kettle.objects;
+		User user = objects.getUser(player);
 		if (user.isAdmin()) {
 			if (args.length != 0) {
 				if (args[0].equalsIgnoreCase(kettle.configFile.getString("superuser_pass"))) {
