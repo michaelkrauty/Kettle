@@ -18,14 +18,13 @@ import org.bukkit.entity.Player;
 public class EditUsersCommand {
 
 	public EditUsersCommand(CommandSender sender, String[] args, Kettle kettle) {
-		Objects objects = kettle.objects;
 		Player player = (Player) sender;
 		if (player.getTargetBlock(null, 10).getType() != Material.CHEST) {
 			player.sendMessage(ChatColor.GRAY + "Make sure you're looking at a " + ChatColor.GREEN + "chest" + ChatColor.GRAY + " within " + ChatColor.GREEN + "10 blocks" + ChatColor.GRAY + " of you");
 			return;
 		}
 		Location targetBlockLocation = player.getTargetBlock(null, 10).getLocation();
-		Locker locker = objects.getLocker(targetBlockLocation);
+		Locker locker = kettle.objects.getLocker(targetBlockLocation);
 		if (locker == null) {
 			player.sendMessage(ChatColor.GRAY + "That chest isn't locked.");
 			return;
@@ -50,23 +49,23 @@ public class EditUsersCommand {
 				int z = targetBlockLocation.getBlockZ();
 				if (w.getBlockAt(x + 1, y, z).getType() == Material.CHEST) {
 					Location loc = new Location(w, x + 1, y, z);
-					if (objects.getLocker(loc) != null)
-						objects.getLocker(loc).addUser(kettle.getServer().getOfflinePlayer(args[2]).getUniqueId());
+					if (kettle.objects.getLocker(loc) != null)
+						kettle.objects.getLocker(loc).addUser(kettle.getServer().getOfflinePlayer(args[2]).getUniqueId());
 				}
 				if (w.getBlockAt(x - 1, y, z).getType() == Material.CHEST) {
 					Location loc = new Location(w, x - 1, y, z);
-					if (objects.getLocker(loc) != null)
-						objects.getLocker(loc).addUser(kettle.getServer().getOfflinePlayer(args[2]).getUniqueId());
+					if (kettle.objects.getLocker(loc) != null)
+						kettle.objects.getLocker(loc).addUser(kettle.getServer().getOfflinePlayer(args[2]).getUniqueId());
 				}
 				if (w.getBlockAt(x, y, z + 1).getType() == Material.CHEST) {
 					Location loc = new Location(w, x, y, z + 1);
-					if (objects.getLocker(loc) != null)
-						objects.getLocker(loc).addUser(kettle.getServer().getOfflinePlayer(args[2]).getUniqueId());
+					if (kettle.objects.getLocker(loc) != null)
+						kettle.objects.getLocker(loc).addUser(kettle.getServer().getOfflinePlayer(args[2]).getUniqueId());
 				}
 				if (w.getBlockAt(x, y, z - 1).getType() == Material.CHEST) {
 					Location loc = new Location(w, x, y, z - 1);
-					if (objects.getLocker(loc) != null)
-						objects.getLocker(loc).addUser(kettle.getServer().getOfflinePlayer(args[2]).getUniqueId());
+					if (kettle.objects.getLocker(loc) != null)
+						kettle.objects.getLocker(loc).addUser(kettle.getServer().getOfflinePlayer(args[2]).getUniqueId());
 				}
 
 
@@ -92,23 +91,23 @@ public class EditUsersCommand {
 				int z = targetBlockLocation.getBlockZ();
 				if (w.getBlockAt(x + 1, y, z).getType() == Material.CHEST) {
 					Location loc = new Location(w, x + 1, y, z);
-					if (objects.getLocker(loc) != null)
-						objects.getLocker(loc).removeUser(kettle.getServer().getOfflinePlayer(args[2]).getUniqueId());
+					if (kettle.objects.getLocker(loc) != null)
+						kettle.objects.getLocker(loc).removeUser(kettle.getServer().getOfflinePlayer(args[2]).getUniqueId());
 				}
 				if (w.getBlockAt(x - 1, y, z).getType() == Material.CHEST) {
 					Location loc = new Location(w, x - 1, y, z);
-					if (objects.getLocker(loc) != null)
-						objects.getLocker(loc).removeUser(kettle.getServer().getOfflinePlayer(args[2]).getUniqueId());
+					if (kettle.objects.getLocker(loc) != null)
+						kettle.objects.getLocker(loc).removeUser(kettle.getServer().getOfflinePlayer(args[2]).getUniqueId());
 				}
 				if (w.getBlockAt(x, y, z + 1).getType() == Material.CHEST) {
 					Location loc = new Location(w, x, y, z + 1);
-					if (objects.getLocker(loc) != null)
-						objects.getLocker(loc).removeUser(kettle.getServer().getOfflinePlayer(args[2]).getUniqueId());
+					if (kettle.objects.getLocker(loc) != null)
+						kettle.objects.getLocker(loc).removeUser(kettle.getServer().getOfflinePlayer(args[2]).getUniqueId());
 				}
 				if (w.getBlockAt(x, y, z - 1).getType() == Material.CHEST) {
 					Location loc = new Location(w, x, y, z - 1);
-					if (objects.getLocker(loc) != null)
-						objects.getLocker(loc).removeUser(kettle.getServer().getOfflinePlayer(args[2]).getUniqueId());
+					if (kettle.objects.getLocker(loc) != null)
+						kettle.objects.getLocker(loc).removeUser(kettle.getServer().getOfflinePlayer(args[2]).getUniqueId());
 				}
 
 

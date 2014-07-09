@@ -62,19 +62,19 @@ public class Kettle extends JavaPlugin {
 	public void onEnable() {
 		kettle = this;
 		checkDirectories();
-		registerEvents();
-		registerCommands();
-
 		configFile = new ConfigFile(this);
-		motdFile = new MotdFile(this);
-		langFile = new LangFile(this);
 		dataFile = new DataFile(this);
-		schedule = new Schedule(this);
+		loadWorlds();
 
 		objects = new Objects(this);
 
 		objects.loadObjects();
-		loadWorlds();
+
+		registerEvents();
+		registerCommands();
+		motdFile = new MotdFile(this);
+		langFile = new LangFile(this);
+		schedule = new Schedule(this);
 
 		log.info("Kettle version " + getDescription().getVersion() + " enabled!");
 	}

@@ -25,17 +25,15 @@ import java.util.List;
 public class WorldCommand extends AbstractCommand {
 
 	private final Kettle kettle;
-	private Objects objects;
 
 	public WorldCommand(String command, String usage, String description, Kettle instance) {
 		super(command, usage, description);
 		kettle = instance;
-		objects = kettle.objects;
 	}
 
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
 		Player player = (Player) sender;
-		User user = objects.getUser(player);
+		User user = kettle.objects.getUser(player);
 		if (kettle.admins.contains(player.getName())) {
 			if (args.length == 0) {
 				String worlds = "";

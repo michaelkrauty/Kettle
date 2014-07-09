@@ -16,17 +16,15 @@ import org.bukkit.entity.Player;
 public class SpawnCommand extends AbstractCommand {
 
 	private final Kettle kettle;
-	private Objects objects;
 
 	public SpawnCommand(String command, String usage, String description, Kettle instance) {
 		super(command, usage, description);
 		kettle = instance;
-		objects = kettle.objects;
 	}
 
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
 		Player player = (Player) sender;
-		User user = objects.getUser(player);
+		User user = kettle.objects.getUser(player);
 		if (kettle.dataFile.getLocation("spawn") != null) {
 			user.teleport(kettle.dataFile.getLocation("spawn"));
 		} else {

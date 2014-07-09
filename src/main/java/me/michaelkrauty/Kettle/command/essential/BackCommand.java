@@ -17,17 +17,15 @@ import org.bukkit.entity.Player;
 public class BackCommand extends AbstractCommand {
 
 	private final Kettle kettle;
-	private Objects objects;
 
 	public BackCommand(String command, String usage, String description, Kettle instance) {
 		super(command, usage, description);
 		kettle = instance;
-		objects = kettle.objects;
 	}
 
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
 		Player player = (Player) sender;
-		User user = objects.getUser(player);
+		User user = kettle.objects.getUser(player);
 		if (user.getLastLocation() != null)
 			user.teleport(user.getLastLocation());
 		else

@@ -26,17 +26,15 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 public class PlayerListener implements Listener {
 
 	private final Kettle kettle;
-	private Objects objects;
 
 	public PlayerListener(Kettle instance) {
 		kettle = instance;
-		objects = kettle.objects;
 	}
 
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
-		if (objects.getUser(event.getPlayer()) == null)
-			objects.users.add(new User(kettle, event.getPlayer()));
+		if (kettle.objects.getUser(event.getPlayer()) == null)
+			kettle.objects.users.add(new User(kettle, event.getPlayer()));
 		final Player player = event.getPlayer();
 		/*
 		if (!kettle.sql.userExists(player.getUniqueId())) {
@@ -77,10 +75,10 @@ public class PlayerListener implements Listener {
 		if (clickedBlock == null)
 			return;
 		if (clickedBlock.getType() == Material.CHEST) {
-			if (isProtected(clickedBlock.getLocation())) {
-				Locker locker = objects.getLocker(clickedBlock.getLocation());
+			if (kettle.objects.lockerExists(clickedBlock.getLocation())) {
+				Locker locker = kettle.objects.getLocker(clickedBlock.getLocation());
 				if (!locker.userHasAccess(event.getPlayer().getUniqueId())) {
-					event.getPlayer().sendMessage(ChatColor.GRAY + "This chest is owned by " + kettle.getServer().getOfflinePlayer(objects.getLocker(clickedBlock.getLocation()).getOwner()).getName());
+					event.getPlayer().sendMessage(ChatColor.GRAY + "This chest is owned by " + kettle.getServer().getOfflinePlayer(kettle.objects.getLocker(clickedBlock.getLocation()).getOwner()).getName());
 					event.setCancelled(true);
 					return;
 				}
@@ -97,32 +95,28 @@ public class PlayerListener implements Listener {
 			int z = blockLocation.getBlockZ();
 			if (w.getBlockAt(x + 1, y, z).getType() == Material.CHEST) {
 				Location loc = new Location(w, x + 1, y, z);
-				if (objects.getLocker(loc) != null)
-					objects.copyLocker(loc, blockLocation);
+				if (kettle.objects.getLocker(loc) != null)
+					kettle.objects.copyLocker(loc, blockLocation);
 				return;
 			}
 			if (w.getBlockAt(x - 1, y, z).getType() == Material.CHEST) {
 				Location loc = new Location(w, x - 1, y, z);
-				if (objects.getLocker(loc) != null)
-					objects.copyLocker(loc, blockLocation);
+				if (kettle.objects.getLocker(loc) != null)
+					kettle.objects.copyLocker(loc, blockLocation);
 				return;
 			}
 			if (w.getBlockAt(x, y, z + 1).getType() == Material.CHEST) {
 				Location loc = new Location(w, x, y, z + 1);
-				if (objects.getLocker(loc) != null)
-					objects.copyLocker(loc, blockLocation);
+				if (kettle.objects.getLocker(loc) != null)
+					kettle.objects.copyLocker(loc, blockLocation);
 				return;
 			}
 			if (w.getBlockAt(x, y, z - 1).getType() == Material.CHEST) {
 				Location loc = new Location(w, x, y, z - 1);
-				if (objects.getLocker(loc) != null)
-					objects.copyLocker(loc, blockLocation);
+				if (kettle.objects.getLocker(loc) != null)
+					kettle.objects.copyLocker(loc, blockLocation);
 				return;
 			}
 		}
-	}
-
-	private boolean isProtected(Location loc) {
-		return objects.lockerExists(loc);
 	}
 }

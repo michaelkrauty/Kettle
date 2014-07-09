@@ -17,7 +17,6 @@ import org.bukkit.entity.Player;
 public class AdminLoginCommand extends AbstractCommand {
 
 	private final Kettle kettle;
-	private Objects objects;
 
 	public AdminLoginCommand(String command, String usage, String description, Kettle instance) {
 		super(command, usage, description);
@@ -26,8 +25,7 @@ public class AdminLoginCommand extends AbstractCommand {
 
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
 		Player player = (Player) sender;
-		objects = kettle.objects;
-		User user = objects.getUser(player);
+		User user = kettle.objects.getUser(player);
 		if (user.isAdmin()) {
 			if (args.length != 0) {
 				if (args[0].equalsIgnoreCase(kettle.configFile.getString("superuser_pass"))) {
