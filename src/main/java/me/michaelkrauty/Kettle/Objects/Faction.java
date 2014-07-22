@@ -5,25 +5,36 @@ import org.bukkit.Chunk;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.UUID;
+import java.util.*;
 
 public class Faction {
 
 	File factionFile;
-	YamlConfiguration factionData = new YamlConfiguration();
 
 	private Kettle kettle;
 	private String name;
 	private String description;
+	private UUID owner;
 	private ArrayList<UUID> members;
 	private ArrayList<String> allies;
 	private ArrayList<String> enemies;
 	private ArrayList<Chunk> land;
 	private int power;
 
+	public Faction(Kettle kettle, String name, UUID owner) {
+		this.kettle = kettle;
+		this.name = name;
+		this.owner = owner;
+		init(true);
+	}
+
 	public Faction(Kettle kettle, String name) {
 		this.kettle = kettle;
+		this.name = name;
+		init(false);
+	}
+
+	private void init(boolean created) {
 		factionFile = new File(kettle.getDataFolder() + "/factions/" + name + ".yml");
 		try {
 			boolean first = false;
@@ -31,8 +42,10 @@ public class Faction {
 				factionFile.createNewFile();
 				first = true;
 			}
-			this.name = name;
 			this.description = "";
+			if (created) {
+				setOwner(this.owner);
+			}
 			this.members = new ArrayList<UUID>();
 			this.allies = new ArrayList<String>();
 			this.enemies = new ArrayList<String>();
@@ -40,12 +53,12 @@ public class Faction {
 			this.power = 0;
 			if (first) {
 				setDesc("Default faction description");
+				setOwner(owner);
 				setMembers(new ArrayList<UUID>());
 				setAllies(new ArrayList<String>());
 				setEnemies(new ArrayList<String>());
 				setLand(new ArrayList<Chunk>());
 				setPower(10);
-				reloadFactionFile();
 			}
 			reloadInfo();
 		} catch (Exception e) {
@@ -62,6 +75,10 @@ public class Faction {
 
 	public String getDesc() {
 		return this.description;
+	}
+
+	public UUID getOwner() {
+		return this.owner;
 	}
 
 	public ArrayList<UUID> getMembers() {
@@ -89,41 +106,30 @@ public class Faction {
 	 */
 	public void setDesc(String description) {
 		this.description = description;
-		factionData.set("description", description);
-		saveFactionFile();
 	}
 
-	public void setMembers(ArrayList<UUID> users) {
-		ArrayList<String> test = new ArrayList<String>();
-		for (UUID user : users) {
-			test.add(user.toString());
-		}
-		factionData.set("members", test);
-		saveFactionFile();
+	public void setOwner(UUID owner) {
+		this.owner = owner;
+	}
+
+	public void setMembers(ArrayList<UUID> members) {
+		this.members = members;
 	}
 
 	public void setAllies(ArrayList<String> allies) {
 		this.allies = allies;
-		factionData.set("allies", allies);
-		saveFactionFile();
 	}
 
 	public void setEnemies(ArrayList<String> enemies) {
 		this.enemies = enemies;
-		factionData.set("enemies", enemies);
-		saveFactionFile();
 	}
 
 	public void setLand(ArrayList<Chunk> land) {
 		this.land = land;
-		factionData.set("land", land);
-		saveFactionFile();
 	}
 
 	public void setPower(int power) {
 		this.power = power;
-		factionData.set("power", power);
-		saveFactionFile();
 	}
 
 	/**
@@ -131,27 +137,22 @@ public class Faction {
 	 */
 	public void addMember(UUID user) {
 		members.add(user);
-		setMembers(members);
 	}
 
 	public void addAlly(String ally) {
 		allies.add(ally);
-		setAllies(allies);
 	}
 
 	public void addEnemy(String enemy) {
 		enemies.add(enemy);
-		setEnemies(enemies);
 	}
 
 	public void addLand(Chunk land) {
 		this.land.add(land);
-		setLand(this.land);
 	}
 
 	public void addPower(int power) {
 		this.power = this.power + power;
-		setPower(this.power);
 	}
 
 	/**
@@ -159,42 +160,42 @@ public class Faction {
 	 */
 	public void removeMember(UUID member) {
 		members.remove(member);
-		setMembers(members);
 	}
 
 	public void removeAlly(String ally) {
 		allies.remove(ally);
-		setAllies(allies);
 	}
 
 	public void removeEnemy(String enemy) {
 		enemies.remove(enemy);
-		setEnemies(enemies);
 	}
 
 	public void removeLand(Chunk land) {
 		this.land.remove(land);
-		setLand(this.land);
 	}
 
 	public void removePower(int power) {
 		this.power = this.power - power;
-		setPower(this.power);
 	}
 
 	/**
 	 * File
 	 */
-	public void reloadFactionFile() {
-		try {
-			factionData.load(factionFile);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
 
 	public void saveFactionFile() {
+		YamlConfiguration factionData = new YamlConfiguration();
 		try {
+			factionData.set("description", description);
+			factionData.set("owner", owner.toString());
+			ArrayList<String> members1 = new ArrayList<String>();
+			for (UUID uuid : members) {
+				members1.add(uuid.toString());
+			}
+			factionData.set("members", members1);
+			factionData.set("allies", allies);
+			factionData.set("enemies", enemies);
+			factionData.set("land", land);
+			factionData.set("power", power);
 			factionData.save(factionFile);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -202,11 +203,48 @@ public class Faction {
 	}
 
 	public void reloadInfo() {
-		this.description = getDesc();
-		this.members = getMembers();
-		this.allies = getAllies();
-		this.enemies = getEnemies();
-		this.land = getLand();
-		this.power = getPower();
+		YamlConfiguration factionData = new YamlConfiguration();
+		try {
+			factionData.load(factionFile);
+
+			this.description = factionData.getString("description");
+
+			this.owner = UUID.fromString(factionData.getString("owner"));
+
+			ArrayList<UUID> memberList = new ArrayList<UUID>();
+			for (String str : factionData.getStringList("members")) {
+				memberList.add(UUID.fromString(str));
+			}
+			this.members = memberList;
+
+			ArrayList<String> allyList = new ArrayList<String>();
+			for (String str : factionData.getStringList("allies")) {
+				allyList.add(str);
+			}
+			this.allies = allyList;
+
+			ArrayList<String> enemyList = new ArrayList<String>();
+			for (String str : factionData.getStringList("enemies")) {
+				enemyList.add(str);
+			}
+			this.enemies = enemyList;
+
+			this.land = new ArrayList<Chunk>();
+
+			this.power = factionData.getInt("power");
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void unload() {
+		saveFactionFile();
+		Kettle.kettle.objects.factions.remove(this);
+	}
+
+	public void delete() {
+		factionFile.delete();
+		Kettle.kettle.objects.factions.remove(this);
 	}
 }

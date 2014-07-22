@@ -28,7 +28,6 @@ public class Objects {
 	}
 
 
-
 	public void loadObjects() {
 		loadLockers();
 		loadUsers();
@@ -36,12 +35,11 @@ public class Objects {
 	}
 
 	public void unloadObjects() {
-		try {
-			for (Locker locker : lockers) {
-				locker.unload();
-			}
-		} catch (Exception ignored) {
+		for (Locker locker : lockers) {
+			locker.unload();
 		}
+		unloadUsers();
+		unloadFactions();
 	}
 
 	/**
@@ -110,6 +108,12 @@ public class Objects {
 		return null;
 	}
 
+	public void unloadUsers() {
+		for (User user : users) {
+			user.unload();
+		}
+	}
+
 
 	/**
 	 * FACTIONS
@@ -132,7 +136,7 @@ public class Objects {
 
 	public void createFaction(String name, UUID owner) {
 		if (!factionExists(name)) {
-			Faction faction = new Faction(kettle, name);
+			Faction faction = new Faction(kettle, name, owner);
 			faction.addMember(owner);
 			factions.add(faction);
 		}
@@ -142,6 +146,12 @@ public class Objects {
 		for (File file : new File(kettle.getDataFolder() + "/factions").listFiles()) {
 			String name = file.getName().split("\\.")[0];
 			factions.add(new Faction(kettle, name));
+		}
+	}
+
+	public void unloadFactions() {
+		for (Faction faction : factions) {
+			faction.unload();
 		}
 	}
 }

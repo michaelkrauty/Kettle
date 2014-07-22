@@ -26,21 +26,6 @@ public class Schedule {
 		}, 0, 1);
 	}
 
-	/*public void checkExpiry() {
-		for (HashMap hash : kettle.lockers) {
-			String[] loc0 = ((String) hash.get("location")).split(",");
-			Location loc = new Location(kettle.getServer().getWorld(loc0[0]), Integer.parseInt(loc0[1]), Integer.parseInt(loc0[2]), Integer.parseInt(loc0[3]));
-			long expiry = Long.parseLong((String) hash.get("expiry"));
-			if (expiry == 0) {
-				kettle.sql.removeLocker(loc);
-			} else {
-				if (!(expiry < 0)) {
-					kettle.sql.updateLockerExpiry(loc, expiry - 1);
-				}
-			}
-		}
-	}*/
-
 	public void checkChests() {
 		try {
 			for (Locker locker : objects.lockers) {

@@ -1,7 +1,6 @@
 package me.michaelkrauty.Kettle.command.factions;
 
 import me.michaelkrauty.Kettle.Kettle;
-import me.michaelkrauty.Kettle.Objects.Objects;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -21,7 +20,13 @@ public class CreateCommand {
 			player.sendMessage(ChatColor.RED + "You already belong to a faction!");
 			return;
 		}
+		String pattern = "^[a-zA-Z0-9]*$";
+		if (!args[1].matches(pattern)) {
+			player.sendMessage(ChatColor.RED + "Faction name must be alphanumeric! (numbers and letters)");
+			return;
+		}
 		kettle.objects.createFaction(args[1], player.getUniqueId());
 		kettle.objects.getUser(player).setFaction(args[1]);
+		player.sendMessage(ChatColor.GRAY + "Founded the faction " + args[1]);
 	}
 }

@@ -7,7 +7,6 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import java.io.File;
-import java.sql.Date;
 
 /**
  * Created on 7/1/2014.
@@ -17,12 +16,9 @@ import java.sql.Date;
 public class User {
 
 	File playerFile;
-	YamlConfiguration playerData = new YamlConfiguration();
 
 	private final Kettle kettle;
 	private final Player player;
-	private Date firstLogin;
-	private Date lastLogin;
 	private boolean admin;
 	private boolean teleportEnabled = true;
 	private Location lastLocation;
@@ -34,16 +30,12 @@ public class User {
 		this.player = player;
 		playerFile = new File(kettle.getDataFolder() + "/players/" + player.getUniqueId() + ".yml");
 		boolean first = checkPlayerFile();
-		reloadPlayerFile();
 		if (first) {
-			setFirstLogin(new Date(System.currentTimeMillis()));
-			playerData.set("admin", false);
 			admin = false;
 			setFaction(null);
 		}
 		loadInfo();
-		savePlayerFile();
-		reloadPlayerFile();
+		kettle.getLogger().info("Loaded user: " + player.getName());
 	}
 
 
@@ -52,10 +44,14 @@ public class User {
 	 */
 
 	private void loadInfo() {
+		YamlConfiguration playerData = new YamlConfiguration();
+		try {
+			playerData.load(playerFile);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		if (playerData.getString("lastlocation") != null)
 			lastLocation = kettle.stringToLocation(playerData.getString("lastlocation"));
-		playerData.set("lastlogin", new Date(System.currentTimeMillis()));
-		lastLogin = new Date(System.currentTimeMillis());
 		admin = playerData.getBoolean("admin");
 		faction = playerData.getString("faction");
 	}
@@ -63,30 +59,34 @@ public class User {
 	private boolean checkPlayerFile() {
 		boolean exists = !playerFile.exists();
 		if (!playerFile.exists()) {
-			try {
-				playerFile.createNewFile();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			kettle.getServer().getScheduler().scheduleAsyncDelayedTask(kettle, new Runnable() {
+				public void run() {
+					try {
+						playerFile.createNewFile();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			});
 		}
 		return exists;
 	}
 
-	public void reloadPlayerFile() {
+	public void savePlayerFile() {
 		try {
-			playerData.load(playerFile);
-			loadInfo();
+			YamlConfiguration playerData = new YamlConfiguration();
+			playerData.set("lastlocation", kettle.locationToString(lastLocation));
+			playerData.set("faction", faction);
+			playerData.save(playerFile);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	public void savePlayerFile() {
-		try {
-			playerData.save(playerFile);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+	public void unload() {
+		savePlayerFile();
+		kettle.objects.users.remove(this);
+		kettle.getLogger().info("Unloaded user: " + player.getName());
 	}
 
 
@@ -96,14 +96,6 @@ public class User {
 
 	public Player getPlayer() {
 		return this.player;
-	}
-
-	public Date getFirstLogin() {
-		return this.firstLogin;
-	}
-
-	public Date getLastLogin() {
-		return this.lastLogin;
 	}
 
 	public boolean isAdmin() {
@@ -129,25 +121,14 @@ public class User {
 
 	public void setTeleportEnabled(boolean bool) {
 		this.teleportEnabled = bool;
-		savePlayerFile();
 	}
 
 	public void setLastLocation(Location location) {
 		lastLocation = location;
-		playerData.set("lastlocation", kettle.locationToString(location));
-		savePlayerFile();
 	}
 
 	public void setFaction(String faction) {
 		this.faction = faction;
-		playerData.set("faction", faction);
-		savePlayerFile();
-	}
-
-	public void setFirstLogin(Date firstLogin) {
-		this.firstLogin = firstLogin;
-		playerData.set("firstlogin", firstLogin);
-		savePlayerFile();
 	}
 
 

@@ -2,6 +2,7 @@ package me.michaelkrauty.Kettle.command.factions;
 
 import me.michaelkrauty.Kettle.Kettle;
 import me.michaelkrauty.Kettle.util.AbstractCommand;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -28,7 +29,15 @@ public class FactionsCommand extends AbstractCommand {
 			new CreateCommand(kettle, player, args);
 			return true;
 		}
-		player.sendMessage("unknown command");
+		if (args[0].equalsIgnoreCase("disband")) {
+			new DisbandCommand(kettle, player, args);
+			return true;
+		}
+		if (args[0].equalsIgnoreCase("info")) {
+			new InfoCommand(kettle, player, args);
+			return true;
+		}
+		player.sendMessage(ChatColor.RED + "unknown command");
 		return true;
 	}
 }
