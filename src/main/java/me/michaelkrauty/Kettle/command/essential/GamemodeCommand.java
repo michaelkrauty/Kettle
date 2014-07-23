@@ -1,6 +1,7 @@
 package me.michaelkrauty.Kettle.command.essential;
 
 import me.michaelkrauty.Kettle.Kettle;
+import me.michaelkrauty.Kettle.Objects.User;
 import me.michaelkrauty.Kettle.util.AbstractCommand;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -30,15 +31,16 @@ public class GamemodeCommand extends AbstractCommand {
 			return true;
 		}
 		Player player = (Player) sender;
+		User user = kettle.objects.getUser(player);
 		if (args[0].equalsIgnoreCase("s") || args[0].equalsIgnoreCase("survival") || args[0].equalsIgnoreCase("0")) {
-			if (kettle.admins.contains(player.getName())) {
+			if (user.isAdminLoggedIn()) {
 				player.setGameMode(GameMode.SURVIVAL);
 			}
 			sender.sendMessage(ChatColor.RED + "You don't have permission to do that.");
 			return true;
 		}
 		if (args[0].equalsIgnoreCase("c") || args[0].equalsIgnoreCase("creative") || args[0].equalsIgnoreCase("1")) {
-			if (kettle.admins.contains(player.getName())) {
+			if (user.isAdminLoggedIn()) {
 				player.setGameMode(GameMode.CREATIVE);
 			}
 			sender.sendMessage(ChatColor.RED + "You don't have permission to do that.");

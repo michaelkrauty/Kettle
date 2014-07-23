@@ -109,7 +109,6 @@ public class Kettle extends JavaPlugin {
 		new WorldCommand("world", "/world <create|delete> <name> <type>", "World Command", this).register();
 		new LockerCommand("locker", "/locker", "Locker Command", this).register();
 		new BackCommand("back", "/back", "Back Command", this).register();
-		new KickCommand("kick", "/kick [reason]", "Kck Command", this).register();
 		new NicknameCommand("nickname", "/nick <nickname>", "Nickname Command", Arrays.asList("nick"), this).register();
 
 		/** Factions commands */
