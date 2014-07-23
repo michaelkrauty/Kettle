@@ -19,6 +19,7 @@ import me.michaelkrauty.Kettle.listener.PlayerListener;
 import me.michaelkrauty.Kettle.util.Error;
 import me.michaelkrauty.Kettle.util.Schedule;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.WorldCreator;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginDescriptionFile;
@@ -28,6 +29,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.UUID;
 import java.util.logging.Logger;
 
@@ -53,6 +55,8 @@ public class Kettle extends JavaPlugin {
 	public static ArrayList<String> admins = new ArrayList<String>();
 
 	public static ArrayList<String> mutedPlayers = new ArrayList<String>();
+
+	public static HashMap<Material, Integer> itemPrices = new HashMap<Material, Integer>();
 
 	public final me.michaelkrauty.Kettle.util.Error error = new Error(this);
 

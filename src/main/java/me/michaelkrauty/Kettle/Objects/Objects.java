@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 import java.util.UUID;
 
 /**
@@ -109,8 +110,12 @@ public class Objects {
 	}
 
 	public void unloadUsers() {
-		for (User user : users) {
-			user.unload();
+		try {
+			for (User user : users) {
+				user.savePlayerFile();
+				users.remove(user);
+			}
+		} catch (ConcurrentModificationException ignored) {
 		}
 	}
 
@@ -150,8 +155,12 @@ public class Objects {
 	}
 
 	public void unloadFactions() {
-		for (Faction faction : factions) {
-			faction.unload();
+		try {
+			for (Faction faction : factions) {
+				faction.saveFactionFile();
+				factions.remove(faction);
+			}
+		} catch (ConcurrentModificationException ignored) {
 		}
 	}
 }

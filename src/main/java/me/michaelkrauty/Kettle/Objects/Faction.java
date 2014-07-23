@@ -238,13 +238,7 @@ public class Faction {
 		}
 	}
 
-	public void unload() {
-		saveFactionFile();
-		Kettle.kettle.objects.factions.remove(this);
-	}
-
-	public void delete() {
+	public void deleteFactionFile() {
 		factionFile.delete();
-		Kettle.kettle.objects.factions.remove(this);
 	}
 }

@@ -24,7 +24,8 @@ public class DisbandCommand {
 			player.sendMessage(ChatColor.RED + "You don't own the faction you're in!");
 			return;
 		}
-		kettle.objects.getFaction(kettle.objects.getUser(player).getFaction()).delete();
+		kettle.objects.getFaction(kettle.objects.getUser(player).getFaction()).deleteFactionFile();
+		kettle.objects.factions.remove(kettle.objects.getFaction(kettle.objects.getUser(player).getFaction()));
 		kettle.objects.getUser(player).setFaction(null);
 		player.sendMessage(ChatColor.GRAY + "Disbanded the faction.");
 	}

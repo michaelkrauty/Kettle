@@ -23,18 +23,22 @@ public class User {
 	private boolean teleportEnabled = true;
 	private Location lastLocation;
 	private String faction;
+	private int balance;
 
 
 	public User(Kettle kettle, Player player) {
 		this.kettle = kettle;
 		this.player = player;
 		playerFile = new File(kettle.getDataFolder() + "/players/" + player.getUniqueId() + ".yml");
-		boolean first = checkPlayerFile();
-		if (first) {
+		boolean exists = checkPlayerFile();
+		if (!exists) {
 			admin = false;
-			setFaction(null);
-		}
-		loadInfo();
+			teleportEnabled = true;
+			lastLocation = null;
+			faction = null;
+			balance = 1000;
+		} else
+			loadInfo();
 		kettle.getLogger().info("Loaded user: " + player.getName());
 	}
 
@@ -54,10 +58,11 @@ public class User {
 			lastLocation = kettle.stringToLocation(playerData.getString("lastlocation"));
 		admin = playerData.getBoolean("admin");
 		faction = playerData.getString("faction");
+		balance = playerData.getInt("balance");
 	}
 
 	private boolean checkPlayerFile() {
-		boolean exists = !playerFile.exists();
+		boolean exists = playerFile.exists();
 		if (!playerFile.exists()) {
 			kettle.getServer().getScheduler().scheduleAsyncDelayedTask(kettle, new Runnable() {
 				public void run() {
@@ -75,18 +80,18 @@ public class User {
 	public void savePlayerFile() {
 		try {
 			YamlConfiguration playerData = new YamlConfiguration();
-			playerData.set("lastlocation", kettle.locationToString(lastLocation));
-			playerData.set("faction", faction);
+			playerData.set("admin", admin);
+			playerData.set("teleportenabled", teleportEnabled);
+			if (lastLocation != null)
+				playerData.set("lastlocation", kettle.locationToString(lastLocation));
+			if (faction != null)
+				playerData.set("faction", faction);
+			playerData.set("balance", balance);
 			playerData.save(playerFile);
+			kettle.getLogger().info("Saved user: " + player.getName());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
-
-	public void unload() {
-		savePlayerFile();
-		kettle.objects.users.remove(this);
-		kettle.getLogger().info("Unloaded user: " + player.getName());
 	}
 
 
@@ -95,23 +100,27 @@ public class User {
 	 */
 
 	public Player getPlayer() {
-		return this.player;
+		return player;
 	}
 
 	public boolean isAdmin() {
-		return this.admin;
+		return admin;
 	}
 
 	public boolean teleportEnabled() {
-		return this.teleportEnabled;
+		return teleportEnabled;
 	}
 
 	public Location getLastLocation() {
-		return this.lastLocation;
+		return lastLocation;
 	}
 
 	public String getFaction() {
-		return this.faction;
+		return faction;
+	}
+
+	public int getBalance() {
+		return balance;
 	}
 
 
@@ -129,6 +138,10 @@ public class User {
 
 	public void setFaction(String faction) {
 		this.faction = faction;
+	}
+
+	public void setBalance(int balance) {
+		this.balance = balance;
 	}
 
 

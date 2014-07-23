@@ -13,23 +13,23 @@ import java.util.List;
  *
  * @author michaelkrauty
  */
-public class DataFile {
+public class WorthFile {
 
 	private final Kettle kettle;
 
-	File dataFile = new File(Kettle.kettle.getDataFolder() + "/worth.yml");
-	YamlConfiguration yaml = new YamlConfiguration();
+	File worthFile = new File(Kettle.kettle.getDataFolder() + "/worth.yml");
+	YamlConfiguration data = new YamlConfiguration();
 
-	public DataFile(Kettle instance) {
+	public WorthFile(Kettle instance) {
 		kettle = instance;
 		checkFile();
 		reload();
 	}
 
 	private void checkFile() {
-		if (!dataFile.exists()) {
+		if (!worthFile.exists()) {
 			try {
-				dataFile.createNewFile();
+				worthFile.createNewFile();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -38,7 +38,7 @@ public class DataFile {
 
 	public void save() {
 		try {
-			yaml.save(dataFile);
+			data.save(worthFile);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -46,45 +46,45 @@ public class DataFile {
 
 	public void reload() {
 		try {
-			yaml.load(dataFile);
+			data.load(worthFile);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
 	public void set(String path, String value) {
-		yaml.set(path, value);
+		data.set(path, value);
 		save();
 		reload();
 	}
 
 	public void set(String path, Location value) {
-		yaml.set(path, kettle.locationToString(value));
+		data.set(path, kettle.locationToString(value));
 		save();
 		reload();
 	}
 
 	public void set(String path, ArrayList<String> value) {
-		yaml.set(path, value.toArray());
+		data.set(path, value.toArray());
 		save();
 		reload();
 	}
 
 	public String getString(String path) {
-		return yaml.getString(path);
+		return data.getString(path);
 	}
 
 	public ArrayList<String> getArrayList(String path) {
 		ArrayList<String> al = new ArrayList<String>();
-		if (yaml.getString(path) != null) {
-			al.addAll((List<String>) yaml.getList(path));
+		if (data.getString(path) != null) {
+			al.addAll((List<String>) data.getList(path));
 		}
 		return al;
 	}
 
 	public Location getLocation(String path) {
-		if (yaml.getString(path) != null) {
-			String[] dat = yaml.getString(path).split(",");
+		if (data.getString(path) != null) {
+			String[] dat = data.getString(path).split(",");
 			return new Location(kettle.getServer().getWorld(dat[0]), Integer.parseInt(dat[1]), Integer.parseInt(dat[2]), Integer.parseInt(dat[3]));
 		}
 		return null;
