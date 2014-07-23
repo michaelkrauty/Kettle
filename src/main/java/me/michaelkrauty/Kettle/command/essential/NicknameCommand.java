@@ -8,17 +8,19 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.List;
+
 /**
  * Created on 7/23/2014.
  *
  * @author michaelkrauty
  */
-public class Nickname  extends AbstractCommand {
+public class NicknameCommand extends AbstractCommand {
 
 	private final Kettle kettle;
 
-	public Nickname(String command, String usage, String description, Kettle instance) {
-		super(command, usage, description);
+	public NicknameCommand(String command, String usage, String description, List<String> aliases, Kettle instance) {
+		super(command, usage, description, aliases);
 		kettle = instance;
 	}
 

@@ -15,9 +15,11 @@ import me.michaelkrauty.Kettle.listener.PlayerListener;
 import me.michaelkrauty.Kettle.util.Error;
 import me.michaelkrauty.Kettle.util.Permission;
 import me.michaelkrauty.Kettle.util.Schedule;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.WorldCreator;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -96,17 +98,19 @@ public class Kettle extends JavaPlugin {
 		new TestCommand("test", "/<command> [args]", "Test Command", this).register();
 
 		/** Essential commands */
-		new MotdCommand("motd", "/<command> [args]", "MOTD Command", this).register();
-		new TeleportCommand("teleport", "/<command> [args]", "Teleport Command", Arrays.asList("tp", "tele"), this).register();
-		new TeleportHereCommand("teleporthere", "/<command> [args]", "Teleport Here Command", Arrays.asList("tph", "tphere"), this).register();
-		new GamemodeCommand("gamemode", "/<command> [args]", "Gamemode Command", Arrays.asList("gm"), this).register();
-		new MuteCommand("mute", "/<command> [args]", "Mute Command", this).register();
+		new MotdCommand("motd", "/motd", "MOTD Command", this).register();
+		new TeleportCommand("teleport", "/teleport <player> [player]", "Teleport Command", Arrays.asList("tp", "tele"), this).register();
+		new TeleportHereCommand("teleporthere", "/teleporthere <player>", "Teleport Here Command", Arrays.asList("tph", "tphere"), this).register();
+		new GamemodeCommand("gamemode", "/gamemode <0|1|2> [player]", "Gamemode Command", Arrays.asList("gm"), this).register();
+		new MuteCommand("mute", "/mute <player>", "Mute Command", this).register();
 		new AdminLoginCommand("admin", "/admin <password>", "Login as adin", this).register();
-		new SpawnCommand("spawn", "/<command>", "Spawn Command", this).register();
-		new SetspawnCommand("setspawn", "/<command>", "SetSpawn Command", this).register();
-		new WorldCommand("world", "/<command> [args]", "World Command", this).register();
-		new LockerCommand("locker", "/<command>", "Locker Command", this).register();
-		new BackCommand("back", "/<command>", "Back Command", this).register();
+		new SpawnCommand("spawn", "/spawn", "Spawn Command", this).register();
+		new SetspawnCommand("setspawn", "/setspawn", "SetSpawn Command", this).register();
+		new WorldCommand("world", "/world <create|delete> <name> <type>", "World Command", this).register();
+		new LockerCommand("locker", "/locker", "Locker Command", this).register();
+		new BackCommand("back", "/back", "Back Command", this).register();
+		new KickCommand("kick", "/kick [reason]", "Kck Command", this).register();
+		new NicknameCommand("nickname", "/nick <nickname>", "Nickname Command", Arrays.asList("nick"), this).register();
 
 		/** Factions commands */
 		new FactionsCommand("factions", "/<command> [args]", "The factions command", Arrays.asList("f", "faction", "fac"), this).register();
@@ -175,5 +179,9 @@ public class Kettle extends JavaPlugin {
 	private void loadWorlds() {
 		for (String worldName : dataFile.getArrayList("worlds"))
 			new WorldCreator(worldName).createWorld();
+	}
+
+	public void broadcastNewPlayer(Player player) {
+		getServer().broadcastMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "Welcome " + ChatColor.RESET + ChatColor.BOLD + player.getName() + ChatColor.GREEN + " to the server!");
 	}
 }

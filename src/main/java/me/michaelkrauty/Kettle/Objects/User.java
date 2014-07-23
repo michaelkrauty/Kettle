@@ -61,6 +61,7 @@ public class User {
 			teleportRequestTimeout = -1;
 			permissions = kettle.defaultPermissions;
 			group = Group.LAME;
+			kettle.broadcastNewPlayer(player);
 		} else
 			loadInfo();
 		kettle.getLogger().info("Loaded user: " + player.getName());
