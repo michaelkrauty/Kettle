@@ -1,9 +1,9 @@
 package me.michaelkrauty.Kettle.command.essential;
 
 import me.michaelkrauty.Kettle.Kettle;
-import me.michaelkrauty.Kettle.Objects.Objects;
 import me.michaelkrauty.Kettle.Objects.User;
 import me.michaelkrauty.Kettle.util.AbstractCommand;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -25,57 +25,46 @@ public class TeleportCommand extends AbstractCommand {
 	}
 
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
-		if (args.length == 0) {
-			sender.sendMessage(kettle.langFile.getString("teleport", "incorrectusage"));
-			return true;
-		}
-		if (args.length == 1) {
-			if (sender instanceof Player) {
-				Player player = (Player) sender;
-				User user = kettle.objects.getUser(player);
-				if (kettle.getServer().getPlayer(args[0]) instanceof Player) {
-					Player target = kettle.getServer().getPlayer(args[0]);
-					if (sender.hasPermission("kettle.teleport")) {
+		Player player = (Player) sender;
+		User user = kettle.objects.getUser(player);
+		if (user.isAdminLoggedIn()) {
+			if (args.length == 0) {
+				sender.sendMessage(cmd.getUsage());
+				return true;
+			}
+			if (args.length == 1) {
+					if (kettle.getServer().getPlayer(args[0]) instanceof Player) {
+						Player target = kettle.getServer().getPlayer(args[0]);
 						user.teleport(target);
 						sender.sendMessage("Teleported to " + target.getName());
 						return true;
 					} else {
-						sender.sendMessage(kettle.langFile.getString("teleport", "nopermission"));
+						sender.sendMessage(ChatColor.RED + "Couldn't find that player.");
 						return true;
 					}
-				} else {
-					sender.sendMessage(kettle.langFile.getString("teleport", "playernotfound", args[0]));
-					return true;
-				}
-			} else {
-				sender.sendMessage(kettle.langFile.getString("teleport", "console"));
-				return true;
 			}
-		}
-		if (args.length == 2) {
-			if (kettle.getServer().getPlayer(args[0]) instanceof Player) {
-				Player player1 = kettle.getServer().getPlayer(args[0]);
-				User user1 = kettle.objects.getUser(player1);
-				if (kettle.getServer().getPlayer(args[1]) instanceof Player) {
-					Player player2 = kettle.getServer().getPlayer(args[1]);
-					if (sender.hasPermission("kettle.teleport.others")) {
+			if (args.length == 2) {
+				if (kettle.getServer().getPlayer(args[0]) instanceof Player) {
+					Player player1 = kettle.getServer().getPlayer(args[0]);
+					User user1 = kettle.objects.getUser(player1);
+					if (kettle.getServer().getPlayer(args[1]) instanceof Player) {
+						Player player2 = kettle.getServer().getPlayer(args[1]);
 						user1.teleport(player2);
-						sender.sendMessage(kettle.langFile.getString("teleport", "teleportplayertoplayersuccess", player1.getName(), player2.getName()));
+						sender.sendMessage(ChatColor.GRAY + "Teleported " + player1.getName() + " to " + player2.getName());
 						return true;
 					} else {
-						sender.sendMessage(kettle.langFile.getString("teleport", "nopermission"));
+						sender.sendMessage(ChatColor.RED + "Couldn't find that player.");
 						return true;
 					}
 				} else {
-					sender.sendMessage(kettle.langFile.getString("teleport", "playernotfound", args[1]));
+					sender.sendMessage(ChatColor.RED + "Couldn't find that player.");
 					return true;
 				}
-			} else {
-				sender.sendMessage(kettle.langFile.getString("teleport", "playernotfound", args[0]));
-				return true;
 			}
+			sender.sendMessage(cmd.getUsage());
+			return true;
 		}
-		sender.sendMessage(kettle.langFile.getString("teleport", "incorrectusage"));
+		kettle.getServer().dispatchCommand(sender, "tpa" + args[0]);
 		return true;
 	}
 }

@@ -4,6 +4,7 @@ import me.michaelkrauty.Kettle.Kettle;
 import me.michaelkrauty.Kettle.Objects.Objects;
 import me.michaelkrauty.Kettle.Objects.User;
 import me.michaelkrauty.Kettle.util.AbstractCommand;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -25,25 +26,24 @@ public class TeleportRequestCommand extends AbstractCommand {
 	}
 
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
-		if (args.length == 0) {
-			sender.sendMessage(kettle.langFile.getString("teleportrequest", "incorrectusage"));
+		if (sender instanceof Player)
 			return true;
-		}
-		if (sender instanceof Player) {
-			sender.sendMessage(kettle.langFile.getString("teleportrequest", "console"));
-			return true;
-		}
 		Player player = (Player) sender;
+		if (args.length == 0) {
+			sender.sendMessage(cmd.getUsage());
+			return true;
+		}
 		if (kettle.getServer().getPlayer(args[0]) instanceof Player) {
 			Player target = kettle.getServer().getPlayer(args[0]);
 			User user = kettle.objects.getUser(target);
 			if (user.teleportEnabled()) {
-				// TODO: tpa
+				user.requestTeleport(player.getUniqueId());
+				player.sendMessage(ChatColor.GRAY + "Requested to teleport to " + user.getName());
 			} else {
-				// target's teleportion is disabled
+				player.sendMessage(ChatColor.GRAY + "" + user.getName() + " has teleportion disabled.");
 			}
 		}
-		sender.sendMessage(kettle.langFile.getString("teleportrequest", "incorrectusage"));
+		sender.sendMessage(cmd.getUsage());
 		return true;
 	}
 }

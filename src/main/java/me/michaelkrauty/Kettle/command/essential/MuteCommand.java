@@ -1,10 +1,12 @@
 package me.michaelkrauty.Kettle.command.essential;
 
 import me.michaelkrauty.Kettle.Kettle;
+import me.michaelkrauty.Kettle.Objects.User;
 import me.michaelkrauty.Kettle.util.AbstractCommand;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -24,34 +26,51 @@ public class MuteCommand extends AbstractCommand {
 	}
 
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
-		if (args.length == 0) {
-			sender.sendMessage(ChatColor.RED + "/mute <player>");
+		if (sender instanceof ConsoleCommandSender)
 			return true;
-		}
-		if (args[0].equalsIgnoreCase("list")) {
-			String players = "";
-			if (kettle.mutedPlayers.size() != 0) {
-				for (int i = 0; i < kettle.mutedPlayers.size(); i++) {
-					if (i != kettle.mutedPlayers.size() - 1) {
-						players = players + kettle.mutedPlayers.get(i) + ", ";
-					} else {
-						players = players + kettle.mutedPlayers.get(i);
+		Player player = (Player) sender;
+		User user = kettle.objects.getUser(player);
+		if (user.isAdminLoggedIn()) {
+			if (args.length == 0) {
+				sender.sendMessage(ChatColor.RED + "/mute <player>");
+				return true;
+			}
+			if (args[0].equalsIgnoreCase("list")) {
+				String players = "";
+				if (kettle.objects.users.size() != 0) {
+					for (int i = 0; i < kettle.objects.users.size(); i++) {
+						if (i != kettle.objects.users.size() - 1) {
+							players = players + kettle.objects.users.get(i).getPlayer().getName() + ", ";
+						} else {
+							players = players + kettle.objects.users.get(i).getPlayer().getName();
+						}
+					}
+				} else {
+					players = "none";
+				}
+				sender.sendMessage(ChatColor.GRAY + players);
+			}
+
+			if (kettle.getServer().getPlayer(args[0]) instanceof Player) {
+				Player target = kettle.getServer().getPlayer(args[0]);
+				if (args.length == 1) {
+					kettle.objects.getUser(target).mute();
+					sender.sendMessage(ChatColor.GRAY + "Muted " + target.getName());
+					return true;
+				}
+				if (args.length == 2) {
+					try {
+						kettle.objects.getUser(target).mute(Integer.parseInt(args[1]));
+						sender.sendMessage(ChatColor.GRAY + "Muted " + target.getName() + " for " + args[1] + " seconds.");
+					} catch (Exception e) {
+						sender.sendMessage(cmd.getUsage());
 					}
 				}
-			} else {
-				players = "none";
+				sender.sendMessage(cmd.getUsage());
 			}
-			sender.sendMessage(ChatColor.GRAY + players);
+			return true;
 		}
-
-		if (kettle.getServer().getPlayer(args[0]) instanceof Player) {
-			Player target = kettle.getServer().getPlayer(args[0]);
-			ArrayList<String> muted = kettle.mutedPlayers;
-			if (!muted.contains(target.getName()))
-				muted.add(target.getName());
-			else
-				muted.remove(target.getName());
-		}
+		player.sendMessage(ChatColor.RED + "You don't have permission to do that.");
 		return true;
 	}
 }

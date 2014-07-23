@@ -1,7 +1,6 @@
 package me.michaelkrauty.Kettle.command.essential;
 
 import me.michaelkrauty.Kettle.Kettle;
-import me.michaelkrauty.Kettle.Objects.Objects;
 import me.michaelkrauty.Kettle.Objects.User;
 import me.michaelkrauty.Kettle.util.AbstractCommand;
 import org.bukkit.command.Command;

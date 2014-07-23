@@ -1,12 +1,17 @@
 package me.michaelkrauty.Kettle.Objects;
 
 import me.michaelkrauty.Kettle.Kettle;
+import me.michaelkrauty.Kettle.util.Group;
+import me.michaelkrauty.Kettle.util.Groups;
+import me.michaelkrauty.Kettle.util.Permission;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.UUID;
 
 /**
  * Created on 7/1/2014.
@@ -20,10 +25,20 @@ public class User {
 	private final Kettle kettle;
 	private final Player player;
 	private boolean admin;
+	private boolean adminLoggedIn;
 	private boolean teleportEnabled = true;
 	private Location lastLocation;
 	private String faction;
 	private int balance;
+	private String prefix;
+	private String suffix;
+	private Group group;
+	private String nickname;
+	private boolean muted;
+	private int muteTime;
+	private ArrayList<Permission> permissions;
+	private UUID teleportRequester;
+	private int teleportRequestTimeout;
 
 
 	public User(Kettle kettle, Player player) {
@@ -33,10 +48,19 @@ public class User {
 		boolean exists = checkPlayerFile();
 		if (!exists) {
 			admin = false;
+			adminLoggedIn = false;
 			teleportEnabled = true;
 			lastLocation = null;
 			faction = null;
 			balance = 1000;
+			prefix = null;
+			suffix = null;
+			muted = false;
+			muteTime = -1;
+			teleportRequester = null;
+			teleportRequestTimeout = -1;
+			permissions = kettle.defaultPermissions;
+			group = Group.LAME;
 		} else
 			loadInfo();
 		kettle.getLogger().info("Loaded user: " + player.getName());
@@ -123,6 +147,43 @@ public class User {
 		return balance;
 	}
 
+	public Group getGroup() {
+		return group;
+	}
+
+	public boolean hasPermission(Permission key) {
+		 return permissions.contains(key);
+	}
+
+	public String getPrefix() {
+		if (prefix != null)
+			return prefix;
+		else
+			return Groups.getPrefix(group);
+	}
+
+	public String getSuffix() {
+		if (suffix != null)
+			return suffix;
+		else
+			return Groups.getSuffix(group);
+	}
+
+	public boolean isMuted() {
+		return muted;
+	}
+
+	public boolean isAdminLoggedIn() {
+		return adminLoggedIn;
+	}
+
+	public String getName() {
+		if (nickname != null)
+			return nickname;
+		else
+			return player.getName();
+	}
+
 
 	/**
 	 * SET
@@ -144,6 +205,18 @@ public class User {
 		this.balance = balance;
 	}
 
+	public void setGroup(Group group) {
+		this.group = group;
+	}
+
+	public void setAdminLoggedIn(boolean adminLoggedIn) {
+		this.adminLoggedIn = adminLoggedIn;
+	}
+
+	public void setNickname(String nickname) {
+		this.nickname = nickname;
+	}
+
 
 	/**
 	 * VOID
@@ -157,5 +230,29 @@ public class User {
 	public void teleport(Entity entity) {
 		setLastLocation(player.getLocation());
 		player.teleport(entity);
+	}
+
+	public void heal() {
+		player.setHealth(20);
+	}
+
+	public void feed() {
+		player.setFoodLevel(20);
+		player.setSaturation(10);
+	}
+
+	public void mute() {
+		muted = true;
+		muteTime = 1000;
+	}
+
+	public void mute(int time) {
+		muted = true;
+		muteTime = time;
+	}
+
+	public void requestTeleport(UUID player) {
+		teleportRequester = player;
+		teleportRequestTimeout = 30;
 	}
 }

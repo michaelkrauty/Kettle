@@ -13,10 +13,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.event.player.*;
 
 /**
  * Created on 5/21/2014.
@@ -48,7 +45,7 @@ public class PlayerListener implements Listener {
 
 	@EventHandler
 	public void onAsyncPlayerChat(AsyncPlayerChatEvent event) {
-		if (kettle.mutedPlayers.contains(event.getPlayer().getName())) {
+		if (kettle.objects.getUser(event.getPlayer()).isMuted()) {
 			event.setCancelled(true);
 			event.getPlayer().sendMessage(ChatColor.RED + "You can't talk, you're muted!");
 		}
@@ -110,5 +107,10 @@ public class PlayerListener implements Listener {
 				return;
 			}
 		}
+	}
+
+	@EventHandler
+	public void onPlayerQuit(PlayerQuitEvent event) {
+		kettle.objects.users.remove(kettle.objects.getUser(event.getPlayer()));
 	}
 }

@@ -2,6 +2,7 @@ package me.michaelkrauty.Kettle.command.essential;
 
 import me.michaelkrauty.Kettle.Kettle;
 import me.michaelkrauty.Kettle.util.AbstractCommand;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -22,7 +23,11 @@ public class SetspawnCommand extends AbstractCommand {
 
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
 		Player player = (Player) sender;
-		kettle.dataFile.set("spawn", player.getLocation());
+		if (kettle.objects.getUser(player).isAdminLoggedIn()) {
+			kettle.dataFile.set("spawn", player.getLocation());
+			return true;
+		}
+		sender.sendMessage(ChatColor.RED + "You don't have permission to do that.");
 		return true;
 	}
 }

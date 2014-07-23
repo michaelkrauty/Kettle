@@ -29,8 +29,8 @@ public class AdminLoginCommand extends AbstractCommand {
 		if (user.isAdmin()) {
 			if (args.length != 0) {
 				if (args[0].equalsIgnoreCase(kettle.configFile.getString("superuser_pass"))) {
-					if (!kettle.admins.contains(player.getName())) {
-						kettle.admins.add(player.getName());
+					if (!user.isAdminLoggedIn()) {
+						user.setAdminLoggedIn(true);
 						sender.sendMessage(ChatColor.GREEN + "Logged in.");
 						return true;
 					}
@@ -40,17 +40,9 @@ public class AdminLoginCommand extends AbstractCommand {
 				sender.sendMessage(ChatColor.RED + "Incorrect password.");
 				return true;
 			}
-			String admins = "";
-			for (int i = 0; i < kettle.admins.size(); i++) {
-				if (i != kettle.admins.size() - 1) {
-					admins = admins + kettle.admins.get(i) + ", ";
-				} else {
-					admins = admins + kettle.admins.get(i);
-				}
-			}
-			sender.sendMessage(ChatColor.GRAY + "Online admins: " + admins);
-			return true;
+			sender.sendMessage(cmd.getUsage());
 		}
+		sender.sendMessage("Unknown command. Type \"/help\" for help.");
 		return true;
 	}
 }

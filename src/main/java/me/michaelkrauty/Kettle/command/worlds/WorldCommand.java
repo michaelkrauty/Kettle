@@ -34,7 +34,7 @@ public class WorldCommand extends AbstractCommand {
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
 		Player player = (Player) sender;
 		User user = kettle.objects.getUser(player);
-		if (kettle.admins.contains(player.getName())) {
+		if (user.isAdminLoggedIn()) {
 			if (args.length == 0) {
 				String worlds = "";
 				List<World> worldsList = kettle.getServer().getWorlds();

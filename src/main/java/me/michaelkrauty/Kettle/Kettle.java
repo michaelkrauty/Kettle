@@ -1,9 +1,6 @@
 package me.michaelkrauty.Kettle;
 
-import me.michaelkrauty.Kettle.Objects.Faction;
-import me.michaelkrauty.Kettle.Objects.Locker;
 import me.michaelkrauty.Kettle.Objects.Objects;
-import me.michaelkrauty.Kettle.Objects.User;
 import me.michaelkrauty.Kettle.command.essential.*;
 import me.michaelkrauty.Kettle.command.factions.FactionsCommand;
 import me.michaelkrauty.Kettle.command.kettle.KettleCommand;
@@ -12,16 +9,15 @@ import me.michaelkrauty.Kettle.command.locker.LockerCommand;
 import me.michaelkrauty.Kettle.command.worlds.WorldCommand;
 import me.michaelkrauty.Kettle.file.ConfigFile;
 import me.michaelkrauty.Kettle.file.DataFile;
-import me.michaelkrauty.Kettle.file.LangFile;
 import me.michaelkrauty.Kettle.file.MotdFile;
 import me.michaelkrauty.Kettle.listener.BlockListener;
 import me.michaelkrauty.Kettle.listener.PlayerListener;
 import me.michaelkrauty.Kettle.util.Error;
+import me.michaelkrauty.Kettle.util.Permission;
 import me.michaelkrauty.Kettle.util.Schedule;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.WorldCreator;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -30,7 +26,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.UUID;
 import java.util.logging.Logger;
 
 /**
@@ -45,7 +40,6 @@ public class Kettle extends JavaPlugin {
 	public static final Logger log = Logger.getLogger("MC");
 	public ConfigFile configFile;
 	public MotdFile motdFile;
-	public LangFile langFile;
 	public DataFile dataFile;
 
 	public Schedule schedule;
@@ -54,7 +48,7 @@ public class Kettle extends JavaPlugin {
 
 	public static ArrayList<String> admins = new ArrayList<String>();
 
-	public static ArrayList<String> mutedPlayers = new ArrayList<String>();
+	public static ArrayList<Permission> defaultPermissions = new ArrayList<Permission>();
 
 	public static HashMap<Material, Integer> itemPrices = new HashMap<Material, Integer>();
 
@@ -77,7 +71,6 @@ public class Kettle extends JavaPlugin {
 		registerEvents();
 		registerCommands();
 		motdFile = new MotdFile(this);
-		langFile = new LangFile(this);
 		schedule = new Schedule(this);
 
 		log.info("Kettle version " + getDescription().getVersion() + " enabled!");
