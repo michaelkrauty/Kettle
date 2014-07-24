@@ -4,11 +4,13 @@ import me.michaelkrauty.Kettle.Kettle;
 import me.michaelkrauty.Kettle.Objects.Locker;
 import me.michaelkrauty.Kettle.Objects.Objects;
 import me.michaelkrauty.Kettle.Objects.User;
+import me.michaelkrauty.Kettle.util.Permission;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -60,6 +62,8 @@ public class PlayerListener implements Listener {
 
 	@EventHandler
 	public void onPlayerInteract(PlayerInteractEvent event) {
+		Player player = event.getPlayer();
+		User user = kettle.objects.getUser(player);
 		Block clickedBlock = event.getClickedBlock();
 		if (clickedBlock == null)
 			return;
@@ -75,6 +79,25 @@ public class PlayerListener implements Listener {
 			}
 			return;
 		}
+		if (clickedBlock.getType() == Material.SIGN || clickedBlock.getType() == Material.WALL_SIGN || clickedBlock.getType() == Material.SIGN_POST) {
+			Sign sign = (Sign) clickedBlock;
+			if (sign.getLine(0).equalsIgnoreCase("[Permission]")) {
+				if (!user.hasPermission(Permission.valueOf(sign.getLine(1)))) {
+					if (user.getBalance() >= Integer.parseInt(sign.getLine(3))) {
+						user.addPermission(Permission.valueOf(sign.getLine(1)));
+						user.setBalance(user.getBalance() - Integer.parseInt(sign.getLine(3)));
+						player.sendMessage(ChatColor.GREEN + "Bought access to that command.");
+						return;
+					}
+					player.sendMessage(ChatColor.RED + "You need at least $" + sign.getLine(3) + " to buy access to that command.");
+					return;
+				}
+				player.sendMessage(ChatColor.GREEN + "You already have access to that command.");
+				return;
+			}
+		}
+
+
 		if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 			Block block = event.getClickedBlock().getWorld().getBlockAt(event.getClickedBlock().getX() + event.getBlockFace().getModX(), event.getClickedBlock().getY() + event.getBlockFace().getModY(), event.getClickedBlock().getZ() + event.getBlockFace().getModZ());
 			Location blockLocation = block.getLocation();

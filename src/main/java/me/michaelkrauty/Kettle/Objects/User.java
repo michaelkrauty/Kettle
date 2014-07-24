@@ -256,4 +256,8 @@ public class User {
 		teleportRequester = player;
 		teleportRequestTimeout = 30;
 	}
+
+	public void addPermission(Permission permission) {
+		permissions.add(permission);
+	}
 }
