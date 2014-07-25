@@ -53,9 +53,15 @@ public class MuteCommand extends AbstractCommand {
 
 			if (kettle.getServer().getPlayer(args[0]) instanceof Player) {
 				Player target = kettle.getServer().getPlayer(args[0]);
+				User targetUser = kettle.objects.getUser(target);
 				if (args.length == 1) {
-					kettle.objects.getUser(target).mute();
-					sender.sendMessage(ChatColor.GRAY + "Muted " + target.getName());
+					if (!targetUser.isMuted()) {
+						targetUser.mute();
+						sender.sendMessage(ChatColor.GRAY + "Muted " + target.getDisplayName());
+						return true;
+					}
+					kettle.objects.getUser(target).unmute();
+					sender.sendMessage(ChatColor.GRAY + "Unmuted " + target.getDisplayName());
 					return true;
 				}
 				if (args.length == 2) {

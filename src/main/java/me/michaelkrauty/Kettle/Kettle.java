@@ -115,6 +115,7 @@ public class Kettle extends JavaPlugin {
 		new FeedCommand("feed", "/feed [player]", "Feed Command", this).register();
 		new GroupCommand("group", "/group <player> <group>", "Group Command", this).register();
 		new PermissionCommand("permission", "/permission <player> <add/remove/list> [permission]", "Group Command", this).register();
+		new RealnameCommand("realname", "/realname <player>", "Realname Command", this).register();
 
 		/** Factions commands */
 		new FactionsCommand("factions", "/<command> [args]", "The factions command", Arrays.asList("f", "faction", "fac"), this).register();

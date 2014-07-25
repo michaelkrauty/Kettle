@@ -278,6 +278,11 @@ public class User {
 		muteTime = time;
 	}
 
+	public void unmute() {
+		muted = false;
+		muteTime = -1;
+	}
+
 	public void requestTeleport(UUID player) {
 		teleportRequester = player;
 		teleportRequestTimeout = 30;

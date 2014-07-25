@@ -137,6 +137,8 @@ public class PlayerListener implements Listener {
 	@EventHandler
 	public void onPlayerQuit(PlayerQuitEvent event) {
 		// kettle.objects.users.remove(kettle.objects.getUser(event.getPlayer()));
+		kettle.objects.getUser(event.getPlayer()).savePlayerFile();
+		kettle.objects.users.remove(kettle.objects.getUser(event.getPlayer()));
 	}
 
 	@EventHandler
