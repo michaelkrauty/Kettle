@@ -21,7 +21,6 @@ import java.util.UUID;
 public class User {
 
 	File playerFile;
-	YamlConfiguration data = new YamlConfiguration();
 
 	private final Kettle kettle;
 	private final Player player;
