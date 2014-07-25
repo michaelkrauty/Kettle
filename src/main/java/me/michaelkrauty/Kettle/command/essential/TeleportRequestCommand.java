@@ -38,9 +38,9 @@ public class TeleportRequestCommand extends AbstractCommand {
 			User user = kettle.objects.getUser(target);
 			if (user.teleportEnabled()) {
 				user.requestTeleport(player.getUniqueId());
-				player.sendMessage(ChatColor.GRAY + "Requested to teleport to " + user.getName());
+				player.sendMessage(ChatColor.GRAY + "Requested to teleport to " + player.getDisplayName());
 			} else {
-				player.sendMessage(ChatColor.GRAY + "" + user.getName() + " has teleportion disabled.");
+				player.sendMessage(ChatColor.GRAY + "" + player.getDisplayName() + " has teleportion disabled.");
 			}
 		}
 		sender.sendMessage(cmd.getUsage());

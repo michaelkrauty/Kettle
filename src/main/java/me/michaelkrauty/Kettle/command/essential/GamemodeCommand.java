@@ -27,7 +27,7 @@ public class GamemodeCommand extends AbstractCommand {
 
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
 		if (args.length == 0) {
-			sender.sendMessage(cmd.getUsage());
+			sender.sendMessage(ChatColor.RED + cmd.getUsage());
 			return true;
 		}
 		Player player = (Player) sender;
@@ -35,6 +35,7 @@ public class GamemodeCommand extends AbstractCommand {
 		if (args[0].equalsIgnoreCase("s") || args[0].equalsIgnoreCase("survival") || args[0].equalsIgnoreCase("0")) {
 			if (user.isAdminLoggedIn()) {
 				player.setGameMode(GameMode.SURVIVAL);
+				return true;
 			}
 			sender.sendMessage(ChatColor.RED + "You don't have permission to do that.");
 			return true;
@@ -42,11 +43,12 @@ public class GamemodeCommand extends AbstractCommand {
 		if (args[0].equalsIgnoreCase("c") || args[0].equalsIgnoreCase("creative") || args[0].equalsIgnoreCase("1")) {
 			if (user.isAdminLoggedIn()) {
 				player.setGameMode(GameMode.CREATIVE);
+				return true;
 			}
 			sender.sendMessage(ChatColor.RED + "You don't have permission to do that.");
 			return true;
 		}
-		sender.sendMessage(cmd.getUsage());
+		sender.sendMessage(ChatColor.RED + cmd.getUsage());
 		return true;
 	}
 }

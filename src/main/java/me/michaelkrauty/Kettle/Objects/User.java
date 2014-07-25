@@ -1,9 +1,9 @@
 package me.michaelkrauty.Kettle.Objects;
 
 import me.michaelkrauty.Kettle.Kettle;
-import me.michaelkrauty.Kettle.util.Group;
 import me.michaelkrauty.Kettle.util.Groups;
-import me.michaelkrauty.Kettle.util.Permission;
+import me.michaelkrauty.Kettle.util.Util;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
@@ -21,22 +21,22 @@ import java.util.UUID;
 public class User {
 
 	File playerFile;
+	YamlConfiguration data = new YamlConfiguration();
 
 	private final Kettle kettle;
 	private final Player player;
 	private boolean admin;
 	private boolean adminLoggedIn;
-	private boolean teleportEnabled = true;
+	private boolean teleportEnabled;
 	private Location lastLocation;
 	private String faction;
 	private int balance;
 	private String prefix;
 	private String suffix;
-	private Group group;
-	private String nickname;
+	private String group;
 	private boolean muted;
 	private int muteTime;
-	private ArrayList<Permission> permissions;
+	private ArrayList<String> permissions;
 	private UUID teleportRequester;
 	private int teleportRequestTimeout;
 
@@ -46,22 +46,22 @@ public class User {
 		this.player = player;
 		playerFile = new File(kettle.getDataFolder() + "/players/" + player.getUniqueId() + ".yml");
 		boolean exists = checkPlayerFile();
+		admin = false;
+		adminLoggedIn = false;
+		teleportEnabled = true;
+		lastLocation = null;
+		faction = null;
+		balance = 1000;
+		prefix = null;
+		suffix = null;
+		muted = false;
+		muteTime = -1;
+		teleportRequester = null;
+		teleportRequestTimeout = -1;
+		permissions = kettle.defaultPermissions;
+		group = "lame";
 		if (!exists) {
-			admin = false;
-			adminLoggedIn = false;
-			teleportEnabled = true;
-			lastLocation = null;
-			faction = null;
-			balance = 1000;
-			prefix = null;
-			suffix = null;
-			muted = false;
-			muteTime = -1;
-			teleportRequester = null;
-			teleportRequestTimeout = -1;
-			permissions = kettle.defaultPermissions;
-			group = Group.LAME;
-			kettle.broadcastNewPlayer(player);
+			kettle.getServer().broadcastMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "Welcome " + ChatColor.RESET + ChatColor.BOLD + player.getName() + ChatColor.GREEN + ChatColor.BOLD + " to the server!");
 		} else
 			loadInfo();
 		kettle.getLogger().info("Loaded user: " + player.getName());
@@ -79,11 +79,18 @@ public class User {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		if (playerData.getString("lastlocation") != null)
-			lastLocation = kettle.stringToLocation(playerData.getString("lastlocation"));
 		admin = playerData.getBoolean("admin");
+		teleportEnabled = playerData.getBoolean("teleportenabled");
+		if (playerData.getString("lastLocation") != null)
+			lastLocation = kettle.stringToLocation(playerData.getString("lastlocation"));
 		faction = playerData.getString("faction");
 		balance = playerData.getInt("balance");
+		prefix = playerData.getString("prefix");
+		suffix = playerData.getString("suffix");
+		muted = playerData.getBoolean("muted");
+		muteTime = playerData.getInt("mutetime");
+		group = playerData.getString("group");
+		permissions = new ArrayList<String>(playerData.getStringList("permissions"));
 	}
 
 	private boolean checkPlayerFile() {
@@ -112,6 +119,14 @@ public class User {
 			if (faction != null)
 				playerData.set("faction", faction);
 			playerData.set("balance", balance);
+			if (prefix != null)
+				playerData.set("prefix", prefix);
+			if (suffix != null)
+				playerData.set("suffix", suffix);
+			playerData.set("muted", muted);
+			playerData.set("mutetime", muteTime);
+			playerData.set("permissions", permissions);
+			playerData.set("group", group);
 			playerData.save(playerFile);
 			kettle.getLogger().info("Saved user: " + player.getName());
 		} catch (Exception e) {
@@ -148,12 +163,16 @@ public class User {
 		return balance;
 	}
 
-	public Group getGroup() {
+	public String getGroup() {
 		return group;
 	}
 
-	public boolean hasPermission(Permission key) {
-		 return permissions.contains(key);
+	public boolean hasPermission(String key) {
+		if (adminLoggedIn)
+			return true;
+		else
+			return permissions.contains(key);
+
 	}
 
 	public String getPrefix() {
@@ -178,11 +197,8 @@ public class User {
 		return adminLoggedIn;
 	}
 
-	public String getName() {
-		if (nickname != null)
-			return nickname;
-		else
-			return player.getName();
+	public ArrayList<String> getPermissions() {
+		return permissions;
 	}
 
 
@@ -206,7 +222,7 @@ public class User {
 		this.balance = balance;
 	}
 
-	public void setGroup(Group group) {
+	public void setGroup(String group) {
 		this.group = group;
 	}
 
@@ -215,7 +231,18 @@ public class User {
 	}
 
 	public void setNickname(String nickname) {
-		this.nickname = nickname;
+		player.setDisplayName(nickname);
+		player.setPlayerListName(Util.stripColor(nickname));
+		player.setCustomName(Util.stripColor(nickname));
+		player.setCustomNameVisible(true);
+	}
+
+	public void setPrefix(String prefix) {
+		this.prefix = prefix;
+	}
+
+	public void setSuffix(String suffix) {
+		this.suffix = suffix;
 	}
 
 
@@ -257,7 +284,11 @@ public class User {
 		teleportRequestTimeout = 30;
 	}
 
-	public void addPermission(Permission permission) {
+	public void addPermission(String permission) {
 		permissions.add(permission);
+	}
+
+	public void removePermission(String permission) {
+		permissions.remove(permission);
 	}
 }

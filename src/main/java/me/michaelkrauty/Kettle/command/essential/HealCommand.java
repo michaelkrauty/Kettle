@@ -9,15 +9,15 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 /**
- * Created on 7/22/2014.
+ * Created on 7/24/2014.
  *
  * @author michaelkrauty
  */
-public class FeedCommand extends AbstractCommand {
+public class HealCommand extends AbstractCommand {
 
 	private final Kettle kettle;
 
-	public FeedCommand(String command, String usage, String description, Kettle instance) {
+	public HealCommand(String command, String usage, String description, Kettle instance) {
 		super(command, usage, description);
 		kettle = instance;
 	}
@@ -25,9 +25,9 @@ public class FeedCommand extends AbstractCommand {
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
 		Player player = (Player) sender;
 		User user = kettle.objects.getUser(player);
-		if (user.hasPermission("commands.feed")) {
-			user.feed();
-			player.sendMessage(ChatColor.GRAY + "Your appetite was sated.");
+		if (user.hasPermission("commands.heal")) {
+			user.heal();
+			player.sendMessage(ChatColor.GRAY + "You were healed.");
 			return true;
 		}
 		player.sendMessage(ChatColor.RED + "You don't have permission to do that.");

@@ -2,9 +2,8 @@ package me.michaelkrauty.Kettle.listener;
 
 import me.michaelkrauty.Kettle.Kettle;
 import me.michaelkrauty.Kettle.Objects.Locker;
-import me.michaelkrauty.Kettle.Objects.Objects;
 import me.michaelkrauty.Kettle.Objects.User;
-import me.michaelkrauty.Kettle.util.Permission;
+import me.michaelkrauty.Kettle.util.Util;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -35,7 +34,7 @@ public class PlayerListener implements Listener {
 		if (kettle.objects.getUser(event.getPlayer()) == null)
 			kettle.objects.users.add(new User(kettle, event.getPlayer()));
 		final Player player = event.getPlayer();
-		kettle.getServer().getScheduler().scheduleAsyncDelayedTask(kettle, new Runnable() {
+		kettle.getServer().getScheduler().scheduleSyncDelayedTask(kettle, new Runnable() {
 			@Override
 			public void run() {
 				for (String line : kettle.motdFile.getMOTD()) {
@@ -47,10 +46,13 @@ public class PlayerListener implements Listener {
 
 	@EventHandler
 	public void onAsyncPlayerChat(AsyncPlayerChatEvent event) {
-		if (kettle.objects.getUser(event.getPlayer()).isMuted()) {
+		Player player = event.getPlayer();
+		User user = kettle.objects.getUser(player);
+		if (user.isMuted()) {
 			event.setCancelled(true);
 			event.getPlayer().sendMessage(ChatColor.RED + "You can't talk, you're muted!");
 		}
+		event.setFormat(Util.format(user.getPrefix() + player.getDisplayName() + user.getSuffix() + " &8: &r" + event.getMessage()));
 	}
 
 	@EventHandler
@@ -82,9 +84,9 @@ public class PlayerListener implements Listener {
 		if (clickedBlock.getType() == Material.SIGN || clickedBlock.getType() == Material.WALL_SIGN || clickedBlock.getType() == Material.SIGN_POST) {
 			Sign sign = (Sign) clickedBlock;
 			if (sign.getLine(0).equalsIgnoreCase("[Permission]")) {
-				if (!user.hasPermission(Permission.valueOf(sign.getLine(1)))) {
+				if (!user.hasPermission(sign.getLine(1))) {
 					if (user.getBalance() >= Integer.parseInt(sign.getLine(3))) {
-						user.addPermission(Permission.valueOf(sign.getLine(1)));
+						user.addPermission(sign.getLine(1));
 						user.setBalance(user.getBalance() - Integer.parseInt(sign.getLine(3)));
 						player.sendMessage(ChatColor.GREEN + "Bought access to that command.");
 						return;
@@ -134,6 +136,24 @@ public class PlayerListener implements Listener {
 
 	@EventHandler
 	public void onPlayerQuit(PlayerQuitEvent event) {
-		kettle.objects.users.remove(kettle.objects.getUser(event.getPlayer()));
+		// kettle.objects.users.remove(kettle.objects.getUser(event.getPlayer()));
+	}
+
+	@EventHandler
+	public void onPlayerCommandProcess(PlayerCommandPreprocessEvent event) {
+		/*
+		String message = event.getMessage();
+		String d = "";
+		for (Player player : kettle.getServer().getOnlinePlayers()) {
+			String[] m = message.split(" ");
+			for (int i = 0; i < m.length; i++) {
+				if (m[i].toLowerCase().equals(Util.stripColor(player.getDisplayName()).toLowerCase())) {
+					m[i] = player.getName();
+				}
+				d = d + m[i] + " ";
+			}
+		}
+		event.setMessage(d);
+		*/
 	}
 }

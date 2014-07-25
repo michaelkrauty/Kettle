@@ -24,6 +24,10 @@ public class FactionsCommand extends AbstractCommand {
 	}
 
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
+		if (args.length == 0) {
+			sender.sendMessage(ChatColor.RED + cmd.getUsage());
+			return true;
+		}
 		Player player = (Player) sender;
 		if (args[0].equalsIgnoreCase("create")) {
 			new CreateCommand(kettle, player, args);

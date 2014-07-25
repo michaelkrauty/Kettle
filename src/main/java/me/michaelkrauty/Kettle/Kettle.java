@@ -1,11 +1,14 @@
 package me.michaelkrauty.Kettle;
 
 import me.michaelkrauty.Kettle.Objects.Objects;
+import me.michaelkrauty.Kettle.command.chat.PrefixCommand;
 import me.michaelkrauty.Kettle.command.essential.*;
 import me.michaelkrauty.Kettle.command.factions.FactionsCommand;
+import me.michaelkrauty.Kettle.command.groups.GroupCommand;
 import me.michaelkrauty.Kettle.command.kettle.KettleCommand;
 import me.michaelkrauty.Kettle.command.kettle.TestCommand;
 import me.michaelkrauty.Kettle.command.locker.LockerCommand;
+import me.michaelkrauty.Kettle.command.permissions.PermissionCommand;
 import me.michaelkrauty.Kettle.command.worlds.WorldCommand;
 import me.michaelkrauty.Kettle.file.ConfigFile;
 import me.michaelkrauty.Kettle.file.DataFile;
@@ -13,13 +16,10 @@ import me.michaelkrauty.Kettle.file.MotdFile;
 import me.michaelkrauty.Kettle.listener.BlockListener;
 import me.michaelkrauty.Kettle.listener.PlayerListener;
 import me.michaelkrauty.Kettle.util.Error;
-import me.michaelkrauty.Kettle.util.Permission;
 import me.michaelkrauty.Kettle.util.Schedule;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.WorldCreator;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -50,7 +50,7 @@ public class Kettle extends JavaPlugin {
 
 	public static ArrayList<String> admins = new ArrayList<String>();
 
-	public static ArrayList<Permission> defaultPermissions = new ArrayList<Permission>();
+	public static ArrayList<String> defaultPermissions = new ArrayList<String>();
 
 	public static HashMap<Material, Integer> itemPrices = new HashMap<Material, Integer>();
 
@@ -110,6 +110,11 @@ public class Kettle extends JavaPlugin {
 		new LockerCommand("locker", "/locker", "Locker Command", this).register();
 		new BackCommand("back", "/back", "Back Command", this).register();
 		new NicknameCommand("nickname", "/nick <nickname>", "Nickname Command", Arrays.asList("nick"), this).register();
+		new PrefixCommand("prefix", "/prefix <player> <prefix>", "Prefix Command", this).register();
+		new HealCommand("heal", "/heal [player]", "Heal Command", this).register();
+		new FeedCommand("feed", "/feed [player]", "Feed Command", this).register();
+		new GroupCommand("group", "/group <player> <group>", "Group Command", this).register();
+		new PermissionCommand("permission", "/permission <player> <add/remove/list> [permission]", "Group Command", this).register();
 
 		/** Factions commands */
 		new FactionsCommand("factions", "/<command> [args]", "The factions command", Arrays.asList("f", "faction", "fac"), this).register();
@@ -149,38 +154,8 @@ public class Kettle extends JavaPlugin {
 			return getServer().getWorlds().get(0).getSpawnLocation();
 	}
 
-	public static final String format(String str) {
-		return str
-				.replace("&0", "§0")
-				.replace("&1", "§1")
-				.replace("&2", "§2")
-				.replace("&3", "§3")
-				.replace("&4", "§4")
-				.replace("&5", "§5")
-				.replace("&6", "§6")
-				.replace("&7", "§7")
-				.replace("&8", "§8")
-				.replace("&9", "§9")
-				.replace("&a", "§a")
-				.replace("&b", "§b")
-				.replace("&c", "§c")
-				.replace("&d", "§d")
-				.replace("&e", "§e")
-				.replace("&f", "§f")
-				.replace("&k", "§k")
-				.replace("&l", "§l")
-				.replace("&m", "§m")
-				.replace("&n", "§n")
-				.replace("&o", "§o")
-				.replace("&r", "§r");
-	}
-
 	private void loadWorlds() {
 		for (String worldName : dataFile.getArrayList("worlds"))
 			new WorldCreator(worldName).createWorld();
-	}
-
-	public void broadcastNewPlayer(Player player) {
-		getServer().broadcastMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "Welcome " + ChatColor.RESET + ChatColor.BOLD + player.getName() + ChatColor.GREEN + " to the server!");
 	}
 }

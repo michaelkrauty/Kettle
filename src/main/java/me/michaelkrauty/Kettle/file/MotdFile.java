@@ -1,6 +1,7 @@
 package me.michaelkrauty.Kettle.file;
 
 import me.michaelkrauty.Kettle.Kettle;
+import me.michaelkrauty.Kettle.util.Util;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.*;
@@ -51,7 +52,7 @@ public class MotdFile {
 			String sCurrentLine;
 			br = new BufferedReader(new FileReader(motdFile));
 			while ((sCurrentLine = br.readLine()) != null) {
-				motd.add(kettle.format(sCurrentLine));
+				motd.add(Util.format(sCurrentLine));
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
