@@ -1,6 +1,7 @@
 package me.michaelkrauty.Kettle;
 
 import me.michaelkrauty.Kettle.Objects.Objects;
+import me.michaelkrauty.Kettle.command.backpack.BackpackCommand;
 import me.michaelkrauty.Kettle.command.chat.PrefixCommand;
 import me.michaelkrauty.Kettle.command.essential.*;
 import me.michaelkrauty.Kettle.command.factions.FactionsCommand;
@@ -75,6 +76,8 @@ public class Kettle extends JavaPlugin {
 		motdFile = new MotdFile(this);
 		schedule = new Schedule(this);
 
+		scheduleSaves();
+
 		log.info("Kettle version " + getDescription().getVersion() + " enabled!");
 	}
 
@@ -116,6 +119,7 @@ public class Kettle extends JavaPlugin {
 		new GroupCommand("group", "/group <player> <group>", "Group Command", this).register();
 		new PermissionCommand("permission", "/permission <player> <add/remove/list> [permission]", "Group Command", this).register();
 		new RealnameCommand("realname", "/realname <player>", "Realname Command", this).register();
+		new BackpackCommand("backpack", "/backpack [name]", "Backpack Command", this).register();
 
 		/** Factions commands */
 		new FactionsCommand("factions", "/<command> [args]", "The factions command", Arrays.asList("f", "faction", "fac"), this).register();
@@ -127,12 +131,15 @@ public class Kettle extends JavaPlugin {
 		File playerFolder = new File(getDataFolder() + "/players");
 		File factionFolder = new File(getDataFolder() + "/factions");
 		File lockerFolder = new File(getDataFolder() + "/lockers");
+		File backpackFolder = new File(getDataFolder() + "/backpacks");
 		if (!playerFolder.exists())
 			playerFolder.mkdir();
 		if (!factionFolder.exists())
 			factionFolder.mkdir();
 		if (!lockerFolder.exists())
 			lockerFolder.mkdir();
+		if (!backpackFolder.exists())
+			backpackFolder.mkdir();
 	}
 
 	public String locationToString(Location loc) {
@@ -158,5 +165,15 @@ public class Kettle extends JavaPlugin {
 	private void loadWorlds() {
 		for (String worldName : dataFile.getArrayList("worlds"))
 			new WorldCreator(worldName).createWorld();
+	}
+
+	private void scheduleSaves() {
+		getServer().getScheduler().scheduleAsyncRepeatingTask(kettle, new Runnable() {
+			public void run() {
+				objects.saveBackpacks();
+				objects.saveUsers();
+				objects.saveFactions();
+			}
+		}, 6000, 6000);
 	}
 }

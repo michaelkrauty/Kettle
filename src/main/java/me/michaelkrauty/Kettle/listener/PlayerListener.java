@@ -14,7 +14,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.*;
+import org.bukkit.inventory.ItemStack;
 
 /**
  * Created on 5/21/2014.
@@ -64,6 +66,20 @@ public class PlayerListener implements Listener {
 
 	@EventHandler
 	public void onPlayerInteract(PlayerInteractEvent event) {
+		if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+			if (event.getItem() != null) {
+				if (event.getItem().getType() == Material.CHEST) {
+					if (event.getItem().getItemMeta().getLore().get(0) != null) {
+						if (kettle.objects.getBackpack(event.getItem().getItemMeta().getLore().get(0)) != null) {
+							event.setCancelled(true);
+							event.getPlayer().openInventory(kettle.objects.getBackpack(event.getItem().getItemMeta().getLore().get(0)).getInventory());
+							kettle.objects.openBackpacks.put(event.getPlayer(), event.getItem().getItemMeta().getLore().get(0));
+							return;
+						}
+					}
+				}
+			}
+		}
 		Player player = event.getPlayer();
 		User user = kettle.objects.getUser(player);
 		Block clickedBlock = event.getClickedBlock();
@@ -157,5 +173,24 @@ public class PlayerListener implements Listener {
 		}
 		event.setMessage(d);
 		*/
+	}
+
+	@EventHandler
+	public void onInventoryClose(InventoryCloseEvent event) {
+		if (kettle.objects.openBackpacks.get(event.getPlayer()) != null) {
+			String uuid = kettle.objects.openBackpacks.get(event.getPlayer());
+			kettle.objects.openBackpacks.remove(event.getPlayer());
+			for (ItemStack item : event.getPlayer().getInventory().getContents()) {
+				if (item != null) {
+					if (item.getType() == Material.CHEST) {
+						if (item.getItemMeta().getLore().get(0) != null) {
+							if (item.getItemMeta().getLore().get(0).equals(uuid)) {
+								kettle.objects.getBackpack(uuid).setInventory(event.getInventory());
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 }

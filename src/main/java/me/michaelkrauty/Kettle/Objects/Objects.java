@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
+import java.util.HashMap;
 import java.util.UUID;
 
 /**
@@ -24,6 +25,10 @@ public class Objects {
 
 	public ArrayList<Faction> factions = new ArrayList<Faction>();
 
+	public ArrayList<Backpack> backpacks = new ArrayList<Backpack>();
+
+	public HashMap<Player, String> openBackpacks = new HashMap<Player, String>();
+
 	public Objects(Kettle kettle) {
 		this.kettle = kettle;
 	}
@@ -33,6 +38,7 @@ public class Objects {
 		loadLockers();
 		loadUsers();
 		loadFactions();
+		loadBackpacks();
 	}
 
 	public void unloadObjects() {
@@ -41,6 +47,7 @@ public class Objects {
 		}
 		unloadUsers();
 		unloadFactions();
+		unloadBackpacks();
 	}
 
 	/**
@@ -109,14 +116,17 @@ public class Objects {
 		return null;
 	}
 
-	public void unloadUsers() {
-		try {
-			for (User user : users) {
-				user.savePlayerFile();
-				users.remove(user);
-			}
-		} catch (ConcurrentModificationException ignored) {
+	public void saveUsers() {
+		kettle.getLogger().info("Saving users...");
+		for (User user : users) {
+			user.savePlayerFile();
 		}
+		kettle.getLogger().info("Saved uses to file.");
+	}
+
+	public void unloadUsers() {
+		saveUsers();
+		users.clear();
 	}
 
 
@@ -154,13 +164,55 @@ public class Objects {
 		}
 	}
 
-	public void unloadFactions() {
-		try {
-			for (Faction faction : factions) {
-				faction.saveFactionFile();
-				factions.remove(faction);
-			}
-		} catch (ConcurrentModificationException ignored) {
+	public void saveFactions() {
+		kettle.getLogger().info("Saving factions...");
+		for (Faction faction : factions) {
+			faction.saveFactionFile();
 		}
+		kettle.getLogger().info("Factions saved to file.");
+	}
+
+	public void unloadFactions() {
+		saveFactions();
+		factions.clear();
+	}
+
+
+	/**
+	 * BACKPACKS
+	 */
+
+	public Backpack getBackpack(String uuid) {
+		for (Backpack backpack : backpacks) {
+			if (backpack.getUUID().equals(uuid))
+				return backpack;
+		}
+		return null;
+	}
+
+	public void loadBackpacks() {
+		int backpackCount = 0;
+		kettle.getLogger().info("Loading backpacks...");
+		for (File file : new File(kettle.getDataFolder() + "/backpacks").listFiles()) {
+			try {
+				backpacks.add(new Backpack(kettle, file.getName().split("\\.")[0], null));
+				backpackCount++;
+			} catch (NullPointerException e) {
+				kettle.getLogger().info("Couldn't load backpack: " + file.getName() + " (NullPointerException)");
+			}
+		}
+		kettle.getLogger().info("Loaded " + backpackCount + " backpacks.");
+	}
+
+	public void saveBackpacks() {
+		kettle.getLogger().info("Saving backpacks...");
+		for (Backpack backpack : backpacks) {
+			backpack.save();
+		}
+		kettle.getLogger().info("Backpacks saved to file.");
+	}
+
+	public void unloadBackpacks() {
+		saveBackpacks();
 	}
 }
